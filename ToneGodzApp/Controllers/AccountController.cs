@@ -211,15 +211,6 @@ public class AccountController : Controller
         code = Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(code));
         var result = await _userManager.ConfirmEmailAsync(user, code);
         string message = result.Succeeded ? "Your account was confirmed successfully." : "Something went wrong during the confirmation.";
-        if (result.Succeeded)
-        {
-            //await _userManager.AddClaimAsync(user, new Claim("EmailConfirmed", "True"));
-            await _signInManager.RefreshSignInAsync(user);
-        }
-        else
-        {
-            message = "Code is not valid.";
-        }
 
         return Inertia.Render("Account/Confirmation",
                                           new { message = message });
@@ -299,7 +290,7 @@ public class AccountController : Controller
 
         if (!isValidToken)
         {
-            return Inertia.Render("Account/PasswordReset");
+            return BadRequest("Wrong token");
         }
 
         return Inertia.Render("Account/PasswordReset");
@@ -314,7 +305,7 @@ public class AccountController : Controller
             var user = await _userManager.FindByIdAsync(resetPasswordModel.Id);
 
 
-            var result = await _userManager.ResetPasswordAsync(user, resetPasswordModel.Code, resetPasswordModel.Password);
+            var result = await _userManager.ResetPasswordAsync(user, Encoding.UTF8.GetString(WebEncoders.Base64UrlDecode(resetPasswordModel.Code)), resetPasswordModel.Password);
             if (result.Succeeded)
             {
                 return Inertia.Render("Account/PasswordResetConfirmation");

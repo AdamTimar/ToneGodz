@@ -41,7 +41,8 @@ namespace ToneGodzApp.Services
             {
                 if (await GetPaymentIntentByEmail(customer.Email) != null)
                 {
-                    customerEmails.Add(customer);
+                    if (customerEmails.FirstOrDefault(x => x.Email == customer.Email) == null)
+                        customerEmails.Add(customer);
                 }
             }
             return customerEmails;

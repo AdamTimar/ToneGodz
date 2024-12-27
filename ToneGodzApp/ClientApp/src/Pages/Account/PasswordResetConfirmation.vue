@@ -23,7 +23,7 @@ const redirectToLogin = () => {
         <h2
           class="mb-1 text-xl font-bold leading-tight tracking-tight md:text-2xl dark:text-white"
         >
-          {{ message }}
+          Password was reset successfully
         </h2>
         <div
           class="mt-4 space-y-4 lg:mt-5 md:space-y-5 text-tertiary"

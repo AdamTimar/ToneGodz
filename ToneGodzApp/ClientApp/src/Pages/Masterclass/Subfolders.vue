@@ -36,18 +36,18 @@ const location = computed(() => {
       v-for="item in reversedItems"
       class="flex flex-col w-fit bg-[rgb(82_81_81/50%)] p-2 rounded-lg shadow relative"
       :href="
-        item.item3 !== 'video'
+        item.item4 !== 'video'
           ? `/masterclass/subfolders/${item.item1}`
           : `/masterclass/videos/${item.item1}`
       "
     >
       <img
-        :src="'/thumbnail.png'"
+        :src="item.item4 === 'video' ? item.item3 : '/thumbnail.png'"
         alt="Video Thumbnail"
         class="w-96 object-cover rounded-lg mx-auto"
       />
       <svg
-        v-if="item.item3 === 'video'"
+        v-if="item.item4 === 'video'"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

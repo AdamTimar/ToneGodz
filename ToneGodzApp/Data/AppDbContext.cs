@@ -23,15 +23,15 @@ namespace ToneGodzApp.Data
                 .Ignore(u => u.PhoneNumber);
             builder.Entity<UserEntity>()
                 .Ignore(u => u.PhoneNumberConfirmed);
+            builder.Entity<CustomerEntity>().HasIndex(c => c.Email).IsUnique();
+
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseLazyLoadingProxies();
-            }
+
+
         }
     }
 }

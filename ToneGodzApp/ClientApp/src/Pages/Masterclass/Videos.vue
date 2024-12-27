@@ -41,7 +41,7 @@ const reversedSiblings = computed(
           class="mainvidplay"
         >
           <iframe
-            src="https://player.vimeo.com/video/1040725600?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479"
+            :src="`${video.embed}?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479`"
             frameborder="0"
             allow="autoplay; fullscreen; picture-in-picture; clipboard-write"
             class="rounded-md"
@@ -70,7 +70,7 @@ const reversedSiblings = computed(
           :href="`/masterclass/videos/${sibling.item1}`"
         >
           <img
-            src="/thumbnail.png"
+            :src="sibling.item3"
             alt="Video Thumbnail"
             class="w-60 h-36 object-cover rounded-lg"
           />

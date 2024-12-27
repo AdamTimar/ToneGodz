@@ -15,7 +15,9 @@
               class="size-9 cursor-pointer"
               @click="copyURL()"
             />
-            <p class="text-left text-xl text-secondary">contact@tonegodz.com</p>
+            <p class="text-left text-xl text-secondary break-all">
+              contact@tonegodz.com
+            </p>
           </div>
 
           <div class="flex gap-10 p-3 rounded-md justify-center">

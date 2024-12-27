@@ -72,41 +72,60 @@
     <!-- Hamburger Menu for mobile -->
     <div class="hamburger-container hidden">
       <input type="checkbox" id="hamburger" class="hidden" />
-      <label for="hamburger" class="hamburger-icon cursor-pointer relative">
+      <label
+        for="hamburger"
+        class="hamburger-icon cursor-pointer relative bottom-3"
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           width="30"
           height="30"
           viewBox="0 0 30 30"
-          class="hamburger-svg"
+          class="hamburger-svg absolute right-2 center"
         >
           <path fill="#FFFFFF" d="M5 7h20v4H5zM5 13h20v4H5zM5 19h20v4H5z" />
         </svg>
       </label>
       <nav class="menu">
+        <a href="/" class="text-secondary hover:text-hoverPrimary px-4">Home</a>
         <a
-          href="/#aboutus"
-          :class="{ 'border-hoverPrimary border-b-2': currentPath === '/' }"
-          class="text-secondary hover:text-hoverPrimary border-b-2 px-4"
+          href="/#achieveYourVision"
+          class="text-secondary hover:text-hoverPrimary px-4"
         >
           AboutUs
         </a>
         <a
-          href="/#purchase"
-          :class="{ 'border-hoverPrimary border-b-2': currentPath === '/' }"
-          class="text-secondary hover:text-hoverPrimary border-b-2 border-transparent px-4"
+          href="/masterclass"
+          class="text-secondary hover:text-hoverPrimary border-transparent px-4"
         >
-          Purchase
+          Masterclass
         </a>
-        <a
-          href="/#contact"
-          :class="{ 'border-hoverPrimary border-b-2': currentPath === '/' }"
-          class="text-secondary hover:text-hoverPrimary border-b-2 border-transparent px-4"
+        <PrimaryButton
+          v-if="!page.props.auth"
+          @click="redirectToLogin()"
+          class="navigation-button w-full"
         >
-          Contact
-        </a>
-        <PrimaryButton class="w-full">Log in</PrimaryButton>
-        <PrimaryButton class="w-full">Register</PrimaryButton>
+          Log in
+        </PrimaryButton>
+
+        <div v-else class="navigation-button w-full">
+          {{ page.props.auth.email }}
+        </div>
+
+        <PrimaryButton
+          v-if="!page.props.auth"
+          @click="redirectToRegister()"
+          class="navigation-button w-full"
+        >
+          Register
+        </PrimaryButton>
+        <PrimaryButton
+          v-else
+          @click="logout()"
+          class="navigation-button w-full"
+        >
+          Logout
+        </PrimaryButton>
       </nav>
     </div>
   </div>
@@ -130,11 +149,19 @@ function navigateAndScroll() {
 }
 
 const redirectToLogin = () => {
-  router.visit('/account/login');
+  router.visit('/account/login', {
+    onFinish: () => {
+      window.location.reload();
+    },
+  });
 };
 
 const redirectToRegister = () => {
-  router.visit('/account/register');
+  router.visit('/account/register', {
+    onFinish: () => {
+      window.location.reload();
+    },
+  });
 };
 
 const logout = () => {
@@ -169,6 +196,20 @@ const scrollToSection = (sectionId) => {
   .hamburger-container {
     display: block;
   }
+
+  .menu a {
+    color: white !important;
+  }
+
+  .menu:first-child {
+    border-bottom-width: 0px;
+  }
+
+  .navigation-button {
+    width: fit-content;
+    margin-top: 10px;
+    margin-left: 15px;
+  }
 }
 
 .hamburger-container {
@@ -182,13 +223,16 @@ const scrollToSection = (sectionId) => {
 
 .menu {
   display: flex;
+  padding-top: 100px;
   flex-direction: column;
   position: fixed; /* Fixed positioning */
   top: 0; /* Align with top */
   right: 0; /* Start from the right */
-  background-color: white; /* Background color for menu */
+  /* background-color: white;  */
+  background-color: #232323;
   height: 100%; /* Full height */
   width: 40%; /* Width of the menu */
+  max-width: 250px;
   transition: transform 0.3s ease; /* Smooth transition for transform */
   transform: translateX(100%); /* Start off-screen */
   overflow-y: auto; /* Enable vertical scrolling */
@@ -203,8 +247,9 @@ const scrollToSection = (sectionId) => {
   transition: fill 0.3s ease; /* Smooth transition for color change */
 }
 
-#hamburger:checked + .hamburger-icon .hamburger-svg path {
-  fill: black; /* Change to black when checked */
+#hamburger:checked + .hamburger-icon .hamburger-svg {
+  position: fixed;
+  right: 3rem;
 }
 
 .menu a {

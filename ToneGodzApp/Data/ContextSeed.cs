@@ -15,8 +15,8 @@ namespace ToneGodzApp.Data
         {
             var adminUser = new UserEntity
             {
-                UserName = "elkesizsak@gmail.com",
-                Email = "elkesizsak@gmail.com",
+                UserName = "elekesizsak@gmail.com",
+                Email = "elekesizsak@gmail.com",
                 EmailConfirmed = true,
                 TermsOfUseAccepted = true,
             };

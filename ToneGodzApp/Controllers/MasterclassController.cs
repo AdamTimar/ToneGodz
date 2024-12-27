@@ -72,7 +72,7 @@ public class MasterClassController : Controller
                 var itemsArray = jsonDoc.RootElement.GetProperty("data");
 
                 // Step 5: Loop through the folders array and check for the required keys
-                List<Tuple<string, string, string>> folderDetailUris = new();
+                List<Tuple<string, string, string, string>> folderDetailUris = new();
                 var isVideo = false;
                 foreach (var item in itemsArray.EnumerateArray())
                 {
@@ -81,7 +81,7 @@ public class MasterClassController : Controller
                         var uri = folder.GetProperty("uri").GetString();
                         string[] parts = uri.Split('/');
                         string lastNumberBeforeSlash = parts[parts.Length - 1];
-                        folderDetailUris.Add(Tuple.Create<string, string, string>(lastNumberBeforeSlash, folder.GetProperty("name").GetString(), "folder"));
+                        folderDetailUris.Add(Tuple.Create<string, string, string, string>(lastNumberBeforeSlash, folder.GetProperty("name").GetString(), null, "folder"));
                     }
                     else
                     {
@@ -89,8 +89,9 @@ public class MasterClassController : Controller
                         {
                             var uri = video.GetProperty("uri").GetString();
                             string[] parts = uri.Split('/');
+
                             string lastNumberBeforeSlash = parts[parts.Length - 1];   // Now you can check if the folderElement is a boolean and get its value
-                            folderDetailUris.Add(Tuple.Create<string, string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString(), "video"));
+                            folderDetailUris.Add(Tuple.Create<string, string, string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString(), video.GetProperty("pictures").GetProperty("base_link").GetString(), "video"));
                             isVideo = true;
                         }
                     }
@@ -120,7 +121,7 @@ public class MasterClassController : Controller
             using (var jsonDoc = JsonDocument.Parse(jsonString))
             {
                 // Assuming the root JSON object contains an array of folders under a "data" property
-                var embed = jsonDoc.RootElement.GetProperty("embed").GetProperty("html").GetString();
+                var embed = jsonDoc.RootElement.GetProperty("player_embed_url").GetString();
                 var name = jsonDoc.RootElement.GetProperty("name").GetString();
                 var parentFolder = jsonDoc.RootElement.GetProperty("parent_folder");
                 var parentFolderUri = parentFolder.GetProperty("uri").GetString();
@@ -135,7 +136,7 @@ public class MasterClassController : Controller
 
                     // Step 3: Read the JSON response as a string
                     var jsonString2 = await response2.Content.ReadAsStringAsync();
-                    List<Tuple<string, string>> siblings = new();
+                    List<Tuple<string, string, string>> siblings = new();
                     // Step 4: Parse the JSON string using JsonDocument
                     using (var jsonDoc2 = JsonDocument.Parse(jsonString2))
                     {
@@ -153,7 +154,7 @@ public class MasterClassController : Controller
                                 string[] parts = uri.Split('/');
                                 string lastNumberBeforeSlash = parts[parts.Length - 1];
                                 if (lastNumberBeforeSlash != id.ToString())   // Now you can check if the folderElement is a boolean and get its value
-                                    siblings.Add(Tuple.Create<string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString()));
+                                    siblings.Add(Tuple.Create<string, string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString(), video.GetProperty("pictures").GetProperty("base_link").GetString()));
                                 isVideo = true;
                             }
                         }

@@ -30,9 +30,28 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true; // Cookie is essential for GDPR compliance
 });
 
+var environment = builder.Environment.EnvironmentName;
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
-);
+{
+    if (environment == "Development")
+    {
+        // Use MySQL for Development
+        options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+    }
+    else if (environment == "Production")
+    {
+        // Use SQL Server for Production
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+    else
+    {
+        throw new Exception($"Unsupported environment: {environment}");
+    }
+});
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
+));
 builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
@@ -127,6 +146,7 @@ builder.Services.AddAuthorization(options =>
 
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
                 o.TokenLifespan = TimeSpan.FromHours(3));
+
 var app = builder.Build();
 
 app.UseSession();
