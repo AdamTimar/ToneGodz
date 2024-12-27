@@ -17,50 +17,28 @@ namespace ToneGodzApp.Controllers;
 public class MasterClassController : Controller
 {
     private readonly HttpClient _httpClient;
-    public MasterClassController(IHttpClientFactory httpClientFactory)
+    private readonly IMemoryCache _cache;
+    public MasterClassController(IHttpClientFactory httpClientFactory, IMemoryCache cache)
     {
         _httpClient = httpClientFactory.CreateClient("Vimeo");
+        _cache = cache;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index()
     {
-        var response = await _httpClient.GetAsync("users/232493424/projects/23455033/items");
-        response.EnsureSuccessStatusCode();
 
-        // Step 3: Read the JSON response as a string
-        var jsonString = await response.Content.ReadAsStringAsync();
-
-        // Step 4: Parse the JSON string using JsonDocument
-        using (var jsonDoc = JsonDocument.Parse(jsonString))
+        List<object> folderDetailUris = new();
+        var cacheKey = "mainFolders";
+        if (_cache.TryGetValue(cacheKey, out var mainFolders))
         {
-            // Assuming the root JSON object contains an array of folders under a "data" property
-            var itemsArray = jsonDoc.RootElement.GetProperty("data");
-
-            // Step 5: Loop through the folders array and check for the required keys
-            List<Tuple<string, string>> folderDetailUris = new();
-            foreach (var item in itemsArray.EnumerateArray())
-            {
-                var folder = item.GetProperty("folder");
-                var uri = folder.GetProperty("uri").GetString();
-                string[] parts = uri.Split('/');
-                string lastNumberBeforeSlash = parts[parts.Length - 1];
-
-                folderDetailUris.Add(Tuple.Create<string, string>(lastNumberBeforeSlash, folder.GetProperty("name").GetString()));
-            }
-
-            return Inertia.Render("Masterclass/Index", new { folders = folderDetailUris });
+            folderDetailUris = (List<object>)mainFolders;
         }
-    }
 
-    [HttpGet]
-    [Route("subfolders/{id}")]
-    public async Task<IActionResult> SubFolders(int id)
-    {
-        var response = await _httpClient.GetAsync($"users/232493424/projects/{id}/items");
-        if (response.IsSuccessStatusCode)
+        else
         {
-            // Step 3: Read the JSON response as a string
+            var response = await _httpClient.GetAsync("users/232493424/projects/23455033/items");
+            response.EnsureSuccessStatusCode();
 
             // Step 3: Read the JSON response as a string
             var jsonString = await response.Content.ReadAsStringAsync();
@@ -72,37 +50,99 @@ public class MasterClassController : Controller
                 var itemsArray = jsonDoc.RootElement.GetProperty("data");
 
                 // Step 5: Loop through the folders array and check for the required keys
-                List<Tuple<string, string, string, string>> folderDetailUris = new();
-                var isVideo = false;
+
                 foreach (var item in itemsArray.EnumerateArray())
                 {
-                    if (item.TryGetProperty("folder", out JsonElement folder))
+                    var folder = item.GetProperty("folder");
+                    var uri = folder.GetProperty("uri").GetString();
+                    string[] parts = uri.Split('/');
+                    string lastNumberBeforeSlash = parts[parts.Length - 1];
+
+                    folderDetailUris.Add(new { id = lastNumberBeforeSlash, name = folder.GetProperty("name").GetString() });
+                    _cache.Set(cacheKey, folderDetailUris, TimeSpan.FromDays(1));
+                }
+            }
+
+        }
+
+        return Inertia.Render("Masterclass/Index", new { folders = folderDetailUris });
+    }
+
+    [HttpGet]
+    [Route("subfolders/{id}")]
+    public async Task<IActionResult> SubFolders(int id)
+    {
+        List<object> folderDetailUris = new();
+        string folderName = null;
+        var cacheKey = "subFolder-" + id;
+
+        if (_cache.TryGetValue(cacheKey, out var mainFolders))
+        {
+            var itemsFolderTuple = (Tuple<List<object>, string>)mainFolders;
+            folderDetailUris = itemsFolderTuple.Item1;
+            folderName = itemsFolderTuple.Item2;
+        }
+
+        else
+        {
+            var response = await _httpClient.GetAsync($"users/232493424/projects/{id}");
+            if (response.IsSuccessStatusCode)
+            {
+                folderName = JsonDocument.Parse(await response.Content.ReadAsStringAsync()).RootElement.GetProperty("name").GetString();
+            }
+            response = await _httpClient.GetAsync($"users/232493424/projects/{id}/items");
+            if (response.IsSuccessStatusCode)
+            {
+                // Step 3: Read the JSON response as a string
+
+                // Step 3: Read the JSON response as a string
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                // Step 4: Parse the JSON string using JsonDocument
+                using (var jsonDoc = JsonDocument.Parse(jsonString))
+                {
+                    // Assuming the root JSON object contains an array of folders under a "data" property
+                    var itemsArray = jsonDoc.RootElement.GetProperty("data");
+
+                    // Step 5: Loop through the folders array and check for the required keys
+
+                    var isVideo = false;
+                    foreach (var item in itemsArray.EnumerateArray())
                     {
-                        var uri = folder.GetProperty("uri").GetString();
-                        string[] parts = uri.Split('/');
-                        string lastNumberBeforeSlash = parts[parts.Length - 1];
-                        folderDetailUris.Add(Tuple.Create<string, string, string, string>(lastNumberBeforeSlash, folder.GetProperty("name").GetString(), null, "folder"));
-                    }
-                    else
-                    {
-                        if (item.TryGetProperty("video", out JsonElement video))
+                        if (item.TryGetProperty("folder", out JsonElement folder))
                         {
-                            var uri = video.GetProperty("uri").GetString();
+                            var uri = folder.GetProperty("uri").GetString();
                             string[] parts = uri.Split('/');
-
-                            string lastNumberBeforeSlash = parts[parts.Length - 1];   // Now you can check if the folderElement is a boolean and get its value
-                            folderDetailUris.Add(Tuple.Create<string, string, string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString(), video.GetProperty("pictures").GetProperty("base_link").GetString(), "video"));
-                            isVideo = true;
+                            string lastNumberBeforeSlash = parts[parts.Length - 1];
+                            folderDetailUris.Add(new { itemId = lastNumberBeforeSlash, itemName = folder.GetProperty("name").GetString(), thumbnail = "", type = "folder" });
                         }
+                        else
+                        {
+                            if (item.TryGetProperty("video", out JsonElement video))
+                            {
+                                var uri = video.GetProperty("uri").GetString();
+                                string[] parts = uri.Split('/');
+                                string lastNumberBeforeSlash = parts[parts.Length - 1];
+                                folderDetailUris.Add(new { itemId = lastNumberBeforeSlash, itemName = video.GetProperty("name").GetString(), thumbnail = video.GetProperty("pictures").GetProperty("base_link").GetString(), type = "video" });
+                                isVideo = true;
+                            }
+                        }
+
+
                     }
 
+                    _cache.Set(cacheKey, Tuple.Create<List<object>, string>(folderDetailUris, folderName), TimeSpan.FromDays(1));
 
                 }
-
-                return Inertia.Render("Masterclass/Subfolders", new { items = folderDetailUris });
+            }
+            else
+            {
+                return NotFound("Project id not found");
             }
         }
-        return NotFound("Project id not found");
+
+        return Inertia.Render("Masterclass/Subfolders", new { items = folderDetailUris, folderName = folderName });
+
     }
 
     [HttpGet]
@@ -136,7 +176,7 @@ public class MasterClassController : Controller
 
                     // Step 3: Read the JSON response as a string
                     var jsonString2 = await response2.Content.ReadAsStringAsync();
-                    List<Tuple<string, string, string>> siblings = new();
+                    List<object> siblings = new();
                     // Step 4: Parse the JSON string using JsonDocument
                     using (var jsonDoc2 = JsonDocument.Parse(jsonString2))
                     {
@@ -145,7 +185,6 @@ public class MasterClassController : Controller
 
                         // Step 5: Loop through the folders array and check for the required keys
 
-                        var isVideo = false;
                         foreach (var item in itemsArray2.EnumerateArray())
                         {
                             if (item.TryGetProperty("video", out JsonElement video))
@@ -154,8 +193,7 @@ public class MasterClassController : Controller
                                 string[] parts = uri.Split('/');
                                 string lastNumberBeforeSlash = parts[parts.Length - 1];
                                 if (lastNumberBeforeSlash != id.ToString())   // Now you can check if the folderElement is a boolean and get its value
-                                    siblings.Add(Tuple.Create<string, string, string>(lastNumberBeforeSlash, video.GetProperty("name").GetString(), video.GetProperty("pictures").GetProperty("base_link").GetString()));
-                                isVideo = true;
+                                    siblings.Add(new { id = lastNumberBeforeSlash, name = video.GetProperty("name").GetString(), thumbnail = video.GetProperty("pictures").GetProperty("base_link").GetString() });
                             }
                         }
 
@@ -163,7 +201,8 @@ public class MasterClassController : Controller
 
                     return Inertia.Render("Masterclass/Videos", new
                     {
-                        video = new { name = name, embed = embed, siblings = siblings }
+                        video = new { name = name, embed = embed, siblings = siblings },
+                        folderName = jsonDoc.RootElement.GetProperty("parent_folder").GetProperty("name").GetString()
                     });
                 }
             }

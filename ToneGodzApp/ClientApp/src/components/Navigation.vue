@@ -174,14 +174,6 @@ const logout = () => {
       // Handle error
     });
 };
-
-const scrollToSection = (sectionId) => {
-  const element = document.getElementById(sectionId);
-  console.log(element);
-  if (element) {
-    element.scrollIntoView({ behavior: 'smooth' });
-  }
-};
 </script>
 
 <style scoped>

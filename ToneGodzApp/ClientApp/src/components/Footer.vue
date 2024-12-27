@@ -8,14 +8,16 @@
         <div
           class="contact-items flex flex-row gap-28 mx-auto my-10 justify-center"
         >
-          <div class="flex gap-2 bg-[#383838] p-3 rounded-md min-w-fit">
+          <div
+            class="flex gap-2 bg-[#383838] max-w-fit mx-auto p-3 rounded-md min-w-fit items-center"
+          >
             <img
               src="/clipboard.svg"
               alt="clip"
               class="size-9 cursor-pointer"
               @click="copyURL()"
             />
-            <p class="text-left text-xl text-secondary break-all">
+            <p class="text-left text-lg text-secondary break-all">
               contact@tonegodz.com
             </p>
           </div>
@@ -85,10 +87,6 @@ const copyURL = () => {
     width: 100%;
     flex-direction: column;
     gap: 20px;
-  }
-
-  .contact-items p {
-    font-size: 1.5rem;
   }
 
   .text-container {

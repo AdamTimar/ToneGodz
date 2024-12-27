@@ -1,11 +1,32 @@
 <script setup>
 import { onMounted, computed } from 'vue';
+import { router } from '@inertiajs/vue3';
 
 const props = defineProps({
   video: {
     type: Object,
   },
+  folderName: {
+    type: String,
+  },
 });
+
+const currentId = computed(() => {
+  const pathName = window.location.pathname;
+  const splittedPath = pathName.split('/');
+  return splittedPath[splittedPath.length - 1];
+});
+
+const back = () => {
+  const backFolderId = new URLSearchParams(window.location.search).get(
+    'backFolderId'
+  );
+  if (backFolderId !== null) {
+    router.visit(`/masterclass/subfolders/${backFolderId}`);
+  } else {
+    router.visit('/masterclass');
+  }
+};
 
 onMounted(() => {
   const vimeoScript = document.createElement('script');
@@ -20,6 +41,25 @@ const reversedSiblings = computed(
 );
 </script>
 <template>
+  <div class="flex w-[90%] mx-auto text-2xl lg:px-12 items-center gap-3 my-8">
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke-width="1.5"
+      stroke="currentColor"
+      class="size-6 cursor-pointer"
+      @click="back()"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
+      />
+    </svg>
+
+    <p>{{ folderName }}</p>
+  </div>
   <div
     class="library-player-container max-w-[90%] mx-auto flex gap-24 items-start"
   >
@@ -29,7 +69,7 @@ const reversedSiblings = computed(
 
     <!-- videos layout -->
     <div class="mainVideo flex items-center w-fit">
-      <a class="ml-24 my-10 flex flex-col w-fit p-2 rounded-lg" href="/videos">
+      <div class="ml-24 my-10 flex flex-col w-fit p-2 rounded-lg">
         <!-- video -->
         <div
           style="
@@ -58,7 +98,7 @@ const reversedSiblings = computed(
         <h3 class="mt-2 text-2xl font-medium text-secondary">
           {{ props.video.name }}
         </h3>
-      </a>
+      </div>
       <!-- <p class="mx-auto">videoplayer</p> -->
     </div>
     <div class="videos-list responsive-videos w-[30%] flex items-end">
@@ -66,31 +106,33 @@ const reversedSiblings = computed(
         <!-- <p class="mx-auto">videos list</p> -->
         <a
           v-for="sibling in reversedSiblings"
-          class="flex flex-col w-[90%] p-2 rounded-lg relative"
-          :href="`/masterclass/videos/${sibling.item1}`"
+          class="flex flex-col w-[90%] p-2 rounded-lg"
+          :href="`/masterclass/videos/${sibling.id}`"
         >
-          <img
-            :src="sibling.item3"
-            alt="Video Thumbnail"
-            class="w-60 h-36 object-cover rounded-lg"
-          />
-
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke-width="1.5"
-            stroke="currentColor"
-            class="size-12 absolute top-[35%] left-[33%] rounded-full p-3 fill-white bg-[rgb(82_81_81/90%)]"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+          <div class="relative w-72">
+            <img
+              :src="sibling.thumbnail"
+              alt="Video Thumbnail"
+              class="w-full h-36 object-cover rounded-lg"
             />
-          </svg>
-          <h3 class="mt-2 text-lg font-medium text-secondary">
-            {{ sibling.item2 }}
+
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-12 absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 rounded-full p-3 fill-white bg-[rgb(82_81_81/90%)]"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.347a1.125 1.125 0 0 1 0 1.972l-11.54 6.347a1.125 1.125 0 0 1-1.667-.986V5.653Z"
+              />
+            </svg>
+          </div>
+          <h3 class="mt-2 text-lg font-medium text-secondary max-w-72">
+            {{ sibling.name }}
           </h3>
         </a>
       </div>
