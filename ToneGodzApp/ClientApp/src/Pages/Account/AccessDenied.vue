@@ -15,9 +15,6 @@ const returnUrl = ref(
   new URLSearchParams(window.location.search).get('ReturnUrl')
 );
 
-onMounted(() => {
-  console.log(returnUrl.value);
-});
 </script>
 <style scoped>
 .access-denied {

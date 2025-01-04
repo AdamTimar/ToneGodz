@@ -1,5 +1,4 @@
-using System.Text.Json;
-using Microsoft.Extensions.Caching.Memory;
+
 using Stripe;
 
 namespace ToneGodzApp.Services
@@ -31,20 +30,47 @@ namespace ToneGodzApp.Services
 
         public async Task<List<Customer>> GetCustomers()
         {
-            var options = new CustomerListOptions
-            {
-                Limit = 1000,
-            };
-            var customers = await _customerService.ListAsync(options);
+            string lastCustomerId = null;
             var customerEmails = new List<Customer>();
-            foreach (var customer in customers)
+            CustomerListOptions options;
+            do
             {
-                if (await GetPaymentIntentByEmail(customer.Email) != null)
+                if (lastCustomerId == null)
                 {
-                    if (customerEmails.FirstOrDefault(x => x.Email == customer.Email) == null)
-                        customerEmails.Add(customer);
+                    options = new CustomerListOptions
+                    {
+                        Limit = 100,
+                    };
+                }
+                else
+                {
+                    options = new CustomerListOptions
+                    {
+                        Limit = 100,
+                        StartingAfter = lastCustomerId
+                    };
+                }
+                var customers = await _customerService.ListAsync(options);
+                if (customers.HasMore)
+                {
+                    lastCustomerId = customers.ElementAt(customers.Count() - 1).Id;
+                }
+                else
+                {
+                    lastCustomerId = null;
+                }
+
+                foreach (var customer in customers)
+                {
+                    if (await GetPaymentIntentByEmail(customer.Email) != null)
+                    {
+                        if (customerEmails.FirstOrDefault(x => x.Email == customer.Email) == null)
+                            customerEmails.Add(customer);
+                    }
                 }
             }
+            while (lastCustomerId != null);
+
             return customerEmails;
         }
         public async Task<PaymentIntent?> GetPaymentIntentByEmail(string email)
@@ -56,7 +82,7 @@ namespace ToneGodzApp.Services
 
             var paymentIntentListoptions = new PaymentIntentListOptions
             {
-                Customer = customer.Id,  // Filter by customer ID
+                Customer = customer.Id,
             };
 
             var paymentIntents = await _paymentIntentService.ListAsync(paymentIntentListoptions);

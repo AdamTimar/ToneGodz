@@ -42,8 +42,7 @@ public class AccountController : Controller
     {
         if (User.Identity.IsAuthenticated)
         {
-            // Redirect the user to the homepage or dashboard if they are already logged in
-            return RedirectToAction("Index", "Home"); // Or another page you prefer
+            return RedirectToAction("Index", "Home");
         }
 
         return Inertia.Render("Account/Login");
@@ -61,11 +60,14 @@ public class AccountController : Controller
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
+
+                var hasAccess = await _context.Customers.AnyAsync(x => x.Email == loginModel.Email);
+                var user = await _userManager.FindByEmailAsync(loginModel.Email);
+                _cache.Set($"HasAccess:{user.Id}", hasAccess, TimeSpan.FromHours(1));
                 return LocalRedirect(returnUrl);
             }
             else
             {
-                // Handle different login failure cases
                 if (result.IsLockedOut)
                 {
                     ModelState.AddModelError("message", "Your account has been locked due to too many failed login attempts.");
@@ -80,7 +82,6 @@ public class AccountController : Controller
                 }
                 else
                 {
-                    // General failed login (invalid username/password)
                     ModelState.AddModelError("message", "Invalid login attempt. Please check your email and password.");
                 }
 
@@ -95,8 +96,7 @@ public class AccountController : Controller
     {
         if (User.Identity.IsAuthenticated)
         {
-            // Redirect the user to the homepage or dashboard if they are already logged in
-            return RedirectToAction("Index", "Home"); // Or another page you prefer
+            return RedirectToAction("Index", "Home");
         }
         return Inertia.Render("Account/Register");
     }
@@ -128,9 +128,6 @@ public class AccountController : Controller
                     new { userId = user.Id, code = code },
                     protocol: Request.Scheme);
 
-                //await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
-                //$"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
                 await _emailSenderService.SendMail(registerModel.Email, "Tonegodz.com Account Confirmation", $"<h2>Confirm Your Email Address</h2><p>Please click the link below to confirm your email:</p><a href=\"{callbackUrl}\">Confirm My Email</a>");
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
@@ -158,7 +155,6 @@ public class AccountController : Controller
     {
         if (User.Identity.IsAuthenticated)
         {
-            // Redirect the user to the homepage or dashboard if they are already logged in
             return RedirectToAction("Index", "Home"); // Or another page you prefer
         }
         return Inertia.Render("Account/ForgotPassword");
@@ -170,7 +166,6 @@ public class AccountController : Controller
     {
         var requestedUrl = HttpContext.Session.GetString("RedirectFromUrl");
 
-        // Optionally, clear the session value after retrieving it
         HttpContext.Session.Remove("RedirectFromUrl");
 
         return Inertia.Render("Account/AccessDenied");
@@ -221,21 +216,16 @@ public class AccountController : Controller
     {
         try
         {
-            // Attempt to sign the user out
             await _signInManager.SignOutAsync();
 
-            // Log the successful logout
             _logger.LogInformation("User logged out.");
 
-            // Return success response
             return Ok(new { message = "Logged out successfully" });
         }
         catch (Exception ex)
         {
-            // Log the error
             _logger.LogError(ex, "An error occurred while logging out.");
 
-            // Return failure response with a message and status code
             return StatusCode(500, new { message = "An error occurred while logging out. Please try again later." });
         }
     }
@@ -285,7 +275,6 @@ public class AccountController : Controller
             return NotFound($"Unable to load user with ID '{userId}'.");
         }
 
-        //Verify the token's validity
         var isValidToken = await _userManager.VerifyUserTokenAsync(user, _userManager.Options.Tokens.PasswordResetTokenProvider, "ResetPassword", decodedCode);
 
         if (!isValidToken)

@@ -10,10 +10,8 @@ const form = useForm({
 const submit = () => {
   form.post('/account/register', {
     onError: (errors) => {
-      console.log('Form submission error:', errors);
     },
     onSuccess: () => {
-      console.log('Login successful');
     },
   });
 };

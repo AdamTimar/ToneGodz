@@ -18,10 +18,8 @@ const props = defineProps({
 const submit = () => {
   form.post('/account/resetpassword', {
     onError: (errors) => {
-      console.log('Form submission error:', errors);
     },
     onSuccess: () => {
-      console.log('Login successful');
     },
   });
 };

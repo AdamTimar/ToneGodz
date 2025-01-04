@@ -8,10 +8,8 @@ const form = useForm({
 const submit = () => {
   form.post('/account/forgotpassword', {
     onError: (errors) => {
-      console.log('Form submission error:', errors);
     },
     onSuccess: () => {
-      console.log('Login successful');
     },
   });
 };

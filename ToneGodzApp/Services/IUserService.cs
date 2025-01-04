@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Identity;
-using ToneGodzApp.Data.Models;
 
 namespace ToneGodzApp.Services
 {

@@ -11,9 +11,6 @@ const props = defineProps({
   },
 });
 
-onMounted(() => {
-  console.log(props.folders);
-});
 
 const reversedItems = computed(
   () => {

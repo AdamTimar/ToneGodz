@@ -1,18 +1,19 @@
-using System.Configuration;
+using Hangfire;
+using Hangfire.MySql;
+using Hangfire.SqlServer;
 using InertiaCore;
 using InertiaCore.Extensions;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using ToneGodzApp.Data;
 using ToneGodzApp.Data.Models;
-using ToneGodzApp.Middlewares;
 using ToneGodzApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-// Add services to the container.
 builder.Services.AddInertia();
 
 builder.Services.AddViteHelper(options =>
@@ -26,8 +27,8 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Session timeout
-    options.Cookie.IsEssential = true; // Cookie is essential for GDPR compliance
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.IsEssential = true;
 });
 
 var environment = builder.Environment.EnvironmentName;
@@ -35,12 +36,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (environment == "Development")
     {
-        // Use MySQL for Development
         options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
     }
     else if (environment == "Production")
     {
-        // Use SQL Server for Production
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     }
     else
@@ -49,9 +48,36 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     }
 });
 
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection")))
-));
+builder.Services.AddHangfire(config =>
+{
+    if (environment == "Development")
+    {
+        config.UseStorage(
+            new MySqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"),
+                new MySqlStorageOptions
+                {
+                    JobExpirationCheckInterval = TimeSpan.FromHours(1)
+                })
+            );
+        config.UseSerializerSettings(new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+    }
+    else if (environment == "Production")
+    {
+        config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"), new SqlServerStorageOptions
+        {
+            JobExpirationCheckInterval = TimeSpan.FromHours(1),
+            InactiveStateExpirationTimeout = TimeSpan.FromDays(1)
+        });
+        config.UseSerializerSettings(new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+    }
+    else
+    {
+        throw new Exception($"Unsupported environment: {environment}");
+    }
+});
+
+builder.Services.AddHangfireServer();
+
 builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
     {
         options.Password.RequireDigit = true;
@@ -64,7 +90,7 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
 
 builder.Services.AddSingleton<StripeService>(provider => new StripeService(builder.Configuration["Stripe:SecretKey"]));
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
-builder.Services.AddHostedService<HostedCustomerService>();
+builder.Services.AddScoped<ICustomerService, TGCustomerService>();
 
 var vimeoToken = builder.Configuration["Vimeo:Token"];
 builder.Services.AddHttpClient("Vimeo", client =>
@@ -84,9 +110,9 @@ builder.Services.ConfigureApplicationCookie(o =>
 
 builder.Services.AddSession(options =>
 {
-    options.Cookie.HttpOnly = true; // Ensures session cookie is HTTP-only
-    options.Cookie.IsEssential = true; // Makes the session cookie essential for the app to function
-    options.IdleTimeout = TimeSpan.FromMinutes(20); // Set the session timeout duration
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.IdleTimeout = TimeSpan.FromMinutes(20);
 });
 
 
@@ -98,18 +124,17 @@ builder.Services.AddAuthorization(options =>
     {
         policy.RequireAssertion(async context =>
         {
-            // You can get the service provider via HttpContext to resolve the logger
             var httpContext = context.Resource as HttpContext;
             if (httpContext == null)
             {
                 return false;
             }
 
-            // Resolve the logger from the HttpContext
             var logger = httpContext.RequestServices.GetRequiredService<ILoggerFactory>()
                                                    .CreateLogger("HasAccessPolicy");
-            // Log the start of the process
-            // Access the UserManager to get the user
+
+            var cache = httpContext.RequestServices.GetRequiredService<IMemoryCache>();
+
             var userManager = httpContext.RequestServices.GetService<UserManager<UserEntity>>();
 
             if (userManager == null)
@@ -126,19 +151,24 @@ builder.Services.AddAuthorization(options =>
                 return false;
             }
 
+            if (cache.TryGetValue($"HasAccess:{user.Id}", out bool cachedHasAccess) && cachedHasAccess)
+            {
+                return true;
+            }
+
             var dbContext = httpContext.RequestServices.GetRequiredService<AppDbContext>();
 
-            var result = await dbContext.Customers.FirstOrDefaultAsync(x => x.Email == user.Email) != null;
-            if (!result)
+            var hasAccess = await dbContext.Customers.AnyAsync(x => x.Email == user.Email);
+            if (!hasAccess)
             {
-                // Capture the current request URL
                 var requestedUrl = httpContext.Request.Path + httpContext.Request.QueryString;
 
-                // Store the original requested URL in the session
                 httpContext.Session.SetString("RedirectFromUrl", requestedUrl);
             }
 
-            return result;
+            cache.Set($"HasAccess:{user.Id}", hasAccess, TimeSpan.FromHours(1));
+
+            return hasAccess;
         });
     });
 });
@@ -155,17 +185,14 @@ using (var scope = app.Services.CreateScope())
     var userManager = scope.ServiceProvider.GetRequiredService<UserManager<UserEntity>>();
     var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-    // You can now use userManager and roleManager for tasks like seeding users or roles
     await ContextSeed.SeedRolesAsync(userManager, roleManager);
     await ContextSeed.SeedAdminAsync(userManager, roleManager, builder.Configuration);
 }
 
 app.UseInertia();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 else
@@ -183,12 +210,9 @@ app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
-    // Retrieve userId from session (example)
     var userName = context.User?.Identity?.IsAuthenticated == true
        ? context.User.Identity.Name
        : null;
-
-    // Share data with InertiaJS globally
 
     if (userName != null)
     {
@@ -196,7 +220,6 @@ app.Use(async (context, next) =>
         var user = await userManager.FindByEmailAsync(userName);
         if (user != null)
         {
-            // Or using a Dictionary (alternative)
             Inertia.Share(new Dictionary<string, object?>
             {
                 ["auth"] = new
@@ -208,18 +231,26 @@ app.Use(async (context, next) =>
         }
     }
 
-    // Call the next middleware in the pipeline
     await next();
 });
-
-//app.UseMiddleware<InertiaUserMiddleware>();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller}/{action=Index}/{id?}");
 
-// Change this to app.cshtml for Inertia
 app.MapFallbackToFile("index.html");
+
+app.Lifetime.ApplicationStarted.Register(() =>
+{
+    using var scope = app.Services.CreateScope();
+    var recurringJobManager = scope.ServiceProvider.GetRequiredService<IRecurringJobManager>();
+    recurringJobManager.AddOrUpdate<TGCustomerService>(
+    "get-customers-job",
+    customerService => customerService.GetCustomersFromStripe(),
+     Cron.Daily(5, 0),
+    TimeZoneInfo.FindSystemTimeZoneById("America/New_York")
+    );
+});
 
 app.Run();
 

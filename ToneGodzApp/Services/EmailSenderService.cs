@@ -1,7 +1,6 @@
 
 using System.Net;
 using System.Net.Mail;
-using System.Text;
 
 namespace ToneGodzApp.Services
 {
@@ -22,24 +21,21 @@ namespace ToneGodzApp.Services
             {
                 SmtpClient smtpClient = new SmtpClient("mail.privateemail.com")
                 {
-                    Port = 587,  // Port for TLS
+                    Port = 587,
                     Credentials = new NetworkCredential("contact@tonegodz.com", _config["PrivateEmail:Password"]),
-                    EnableSsl = true // Enable SSL/TLS encryption
+                    EnableSsl = true 
                 };
 
-                // Create the email message
                 MailMessage mailMessage = new MailMessage
                 {
-                    From = new MailAddress("contact@tonegodz.com"), // Sender's email address
+                    From = new MailAddress("contact@tonegodz.com"),
                     Subject = subject,
                     Body = text,
-                    IsBodyHtml = true // Set to true if you are sending HTML content
+                    IsBodyHtml = true
                 };
 
-                // Add recipient's email address
                 mailMessage.To.Add(to);
 
-                // Send the email
                 smtpClient.Send(mailMessage);
 
                 Console.WriteLine("Email sent successfully!");

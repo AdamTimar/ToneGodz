@@ -23,18 +23,6 @@ const page = usePage();
 
 const auth = computed(() => page.props.auth);
 
-onMounted(() => {
-  console.log('props', page.props);
-});
-
-watch(
-  () => page.props.auth,
-  (oldAuth, newAuth) => {
-    if (oldAuth != newAuth) console.log('Auth updated:', oldAuth, newAuth);
-    // Handle any UI updates here based on new auth data
-  },
-  { immediate: true }
-);
 </script>
 
 <style scoped></style>

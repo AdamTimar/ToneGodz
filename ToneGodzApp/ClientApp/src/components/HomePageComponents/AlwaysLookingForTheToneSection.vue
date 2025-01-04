@@ -50,7 +50,6 @@ import LargeButton from '@/components/LargeButton.vue';
 
 const scrollToSection = (sectionId) => {
   const element = document.getElementById(sectionId);
-  console.log(element);
   if (element) {
     element.scrollIntoView({ behavior: 'smooth' });
   }
