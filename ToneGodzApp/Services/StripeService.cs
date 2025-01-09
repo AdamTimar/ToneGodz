@@ -17,6 +17,11 @@ namespace ToneGodzApp.Services
             _refundService = new RefundService(_client);
         }
 
+        public IStripeClient GetClient()
+        {
+            return _client;
+        }
+
         public async Task<Customer?> GetCustomerByEmailAsync(string email)
         {
             var options = new CustomerListOptions
@@ -91,16 +96,31 @@ namespace ToneGodzApp.Services
 
             foreach (var pi in paymentIntents)
             {
-                var refundListOptions = new RefundListOptions
+                if (pi.Status == "succeeded")
                 {
-                    PaymentIntent = pi.Id
-                };
-                var refunds = await _refundService.ListAsync(refundListOptions);
-                if (refunds.Count() == 0)
-                    return pi;
+                    var refundListOptions = new RefundListOptions
+                    {
+                        PaymentIntent = pi.Id
+                    };
+                    var refunds = await _refundService.ListAsync(refundListOptions);
+                    if (refunds.Count() == 0)
+                        return pi;
+                }
             }
 
             return null;
         }
+
+        public async Task<Customer> CreateCustomerAsync(string email)
+        {
+            var options = new CustomerCreateOptions
+            {
+                Email = email
+            };
+
+            var customer = await _customerService.CreateAsync(options);
+            return customer;
+        }
+
     }
 }

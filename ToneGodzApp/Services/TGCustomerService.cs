@@ -17,16 +17,18 @@ namespace ToneGodzApp.Services
             _logger = logger;
             _stripeService = stripeService;
         }
+
+        public async Task<CustomerEntity> GetCustomerByEmail(string email)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+        }
+
         public async Task GetCustomersFromStripe()
         {
             var stripeCustomers = await _stripeService.GetCustomers();
             foreach (var stripeCustomer in stripeCustomers)
             {
-                var customer = await _context.Customers.FirstOrDefaultAsync(c => c.Email == stripeCustomer.Email);
-                if (customer == null)
-                {
-                    _context.Customers.Add(new CustomerEntity { Email = stripeCustomer.Email });
-                }
+                await AddCustomerIfNotExistsAsync(new CustomerEntity { Email = stripeCustomer.Email });
             }
 
             try
@@ -38,16 +40,24 @@ namespace ToneGodzApp.Services
                 _logger.LogError(ex.Message);
             }
 
-            _context.Customers.Add(new CustomerEntity { Email = "flemming@sweetsilencestudios.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "baracx@gmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "antonioguitars@gmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "carl@10fold.dk" });
-            _context.Customers.Add(new CustomerEntity { Email = "nicolasboriew@gmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "tamastar2099@hotmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "leon.lundqvist06@gmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "joebarresi@mac.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "elekesizsak@gmail.com" });
-            _context.Customers.Add(new CustomerEntity { Email = "timaradam19@gmail.com" });
+            var customersToAdd = new[]
+            {
+                new CustomerEntity { Email = "flemming@sweetsilencestudios.com"  },
+                new CustomerEntity { Email = "baracx@gmail.com" },
+                new CustomerEntity { Email = "antonioguitars@gmail.com" },
+                new CustomerEntity { Email = "carl@10fold.dk"},
+                new CustomerEntity { Email = "nicolasboriew@gmail.com" },
+                new CustomerEntity { Email = "tamastar2099@hotmail.com" },
+                new CustomerEntity { Email = "leon.lundqvist06@gmail.com"  },
+                new CustomerEntity { Email = "joebarresi@mac.com"},
+                new CustomerEntity { Email = "elekesizsak@gmail.com" },
+                new CustomerEntity { Email = "timaradam19@gmail.com" }
+            };
+
+            foreach (var customer in customersToAdd)
+            {
+                await AddCustomerIfNotExistsAsync(customer);
+            }
 
             try
             {
@@ -81,6 +91,22 @@ namespace ToneGodzApp.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
+            }
+        }
+
+        private async Task AddCustomerIfNotExistsAsync(CustomerEntity customer)
+        {
+            var exists = await _context.Customers
+                .AsNoTracking()
+                .AnyAsync(c => c.Email == customer.Email);
+
+            if (!exists)
+            {
+                await _context.Customers.AddAsync(customer);
+            }
+            else
+            {
+                Console.WriteLine($"Customer with email {customer.Email} already exists.");
             }
         }
     }

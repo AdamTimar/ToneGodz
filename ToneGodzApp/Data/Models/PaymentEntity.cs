@@ -27,5 +27,8 @@ namespace ToneGodzApp.Data.Models
 
         [Required]
         public string Currency { get; set; }
+
+        [Required]
+        public string SessionId { get; set; }
     }
 }

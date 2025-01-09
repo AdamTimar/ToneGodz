@@ -128,11 +128,15 @@
       </p>
     </div>
     <div class="button-container flex gap-8 mt-8 mx-28">
-      <LargeButton class="buttons w-[30%] flex gap-5 justify-center">
+      <LargeButton
+        class="buttons w-[30%] flex gap-5 justify-center"
+        @click="redirectToPurchase()"
+      >
         <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
         <p>Pre-order now for $149</p>
       </LargeButton>
       <LargeButton
+        v-if="!$page.props.auth"
         class="buttons w-[30%] flex gap-5 justify-center"
         @click="redirectToRegister()"
       >
@@ -150,6 +154,10 @@ import { router } from '@inertiajs/vue3';
 
 const redirectToRegister = () => {
   router.visit('account/register');
+};
+
+const redirectToPurchase = () => {
+  window.location.href = '/purchase';
 };
 </script>
 

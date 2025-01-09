@@ -10,6 +10,7 @@ using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using ToneGodzApp.Data;
 using ToneGodzApp.Data.Models;
+using ToneGodzApp.Filters;
 using ToneGodzApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -91,6 +92,7 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
 builder.Services.AddSingleton<StripeService>(provider => new StripeService(builder.Configuration["Stripe:SecretKey"]));
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<ICustomerService, TGCustomerService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 var vimeoToken = builder.Configuration["Vimeo:Token"];
 builder.Services.AddHttpClient("Vimeo", client =>
@@ -177,7 +179,20 @@ builder.Services.AddAuthorization(options =>
 builder.Services.Configure<DataProtectionTokenProviderOptions>(o =>
                 o.TokenLifespan = TimeSpan.FromHours(3));
 
+builder.Services.AddCors(options =>
+        {
+            options.AddPolicy("AllowProductionFrontend",
+                policy =>
+                {
+                    policy.WithOrigins("https://zackelekes-001-site1.ltempurl.com",
+                    "https://tonegodz.com")  // Add your production domain
+                          .AllowAnyHeader()
+                          .AllowAnyMethod();
+                });
+        });
 var app = builder.Build();
+
+app.UseCors("AllowProductionFrontend");
 
 app.UseSession();
 using (var scope = app.Services.CreateScope())
@@ -232,6 +247,12 @@ app.Use(async (context, next) =>
     }
 
     await next();
+});
+
+app.UseHangfireDashboard("/hangfire", new DashboardOptions
+{
+    // Authorization: Only allow users who are authenticated and authorized (e.g., "Admin" role)
+    Authorization = new[] { new HangfireDashboardAuthorizationFilter() }
 });
 
 app.MapControllerRoute(

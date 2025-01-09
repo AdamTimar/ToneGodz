@@ -17,7 +17,10 @@
         You can gain access to an exclusive, live webinar with Flemming
         Rasmussen himself. Truly a once-in-a-lifetime opportunity!
       </p>
-      <LargeButton class="mx-auto !bg-[#54ae61] px-9 flex gap-5">
+      <LargeButton
+        class="mx-auto !bg-[#54ae61] px-9 flex gap-5"
+        @click="redirectToPurchase()"
+      >
         <p>Purchase</p>
         <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
       </LargeButton>
@@ -30,6 +33,10 @@
 
 <script setup>
 import LargeButton from '@/components/LargeButton.vue';
+
+const redirectToPurchase = () => {
+  window.location.href = '/purchase';
+};
 </script>
 
 <style scoped>

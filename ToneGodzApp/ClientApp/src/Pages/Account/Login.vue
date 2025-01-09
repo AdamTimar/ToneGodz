@@ -7,12 +7,19 @@ const form = useForm({
   remember: false,
 });
 
+let url = '/account/login';
+const returnUrl = new URLSearchParams(window.location.search).get('ReturnUrl');
+if (returnUrl) {
+  url = url + `?returnUrl=${returnUrl}`;
+  console.log(url);
+}
+
 const submit = () => {
-  form.post('/account/login', {
-    onError: (errors) => {// Optionally handle errors
+  form.post(url, {
+    onError: (errors) => {
+      // Optionally handle errors
     },
-    onSuccess: () => {
-    },
+    onSuccess: () => {},
   });
 };
 </script>

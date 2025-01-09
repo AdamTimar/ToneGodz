@@ -5,7 +5,11 @@
     <p v-if="returnUrl === '/masterclass'">
       You didn't purchase our masterclass yet.
     </p>
-    <a href="/">Return to Home</a>
+    <span>
+      Click
+      <a href="/purchase">here</a>
+      to get access!
+    </span>
   </div>
 </template>
 
@@ -14,7 +18,6 @@ import { onMounted, ref } from 'vue';
 const returnUrl = ref(
   new URLSearchParams(window.location.search).get('ReturnUrl')
 );
-
 </script>
 <style scoped>
 .access-denied {
