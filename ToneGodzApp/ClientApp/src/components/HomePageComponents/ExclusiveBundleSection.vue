@@ -120,12 +120,12 @@
       <p class="mt-8 ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
         Stacked Value: $707
       </p>
-      <p class="ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
+      <!-- <p class="ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
         Bundle Price After Release: $189.99 (No Webinar Included)
-      </p>
-      <p class="ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
+      </p> -->
+      <!-- <p class="ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
         Pre-Order Offer: $149
-      </p>
+      </p> -->
     </div>
     <div class="button-container flex gap-8 mt-8 mx-28">
       <LargeButton
@@ -133,7 +133,7 @@
         @click="redirectToPurchase()"
       >
         <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
-        <p>Pre-order now for $149</p>
+        <p>Order now for $149</p>
       </LargeButton>
       <LargeButton
         v-if="!$page.props.auth"

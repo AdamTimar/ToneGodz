@@ -92,7 +92,7 @@
           href="/#achieveYourVision"
           class="text-secondary hover:text-hoverPrimary px-4"
         >
-          AboutUs
+          About Us
         </a>
         <a
           href="/masterclass"
@@ -108,7 +108,7 @@
           Log in
         </PrimaryButton>
 
-        <div v-else class="navigation-button w-full">
+        <div v-else class="navigation-button max-w-96 break-all">
           {{ page.props.auth.email }}
         </div>
 

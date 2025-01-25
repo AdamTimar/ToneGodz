@@ -1,6 +1,8 @@
 import { createInertiaApp } from '@inertiajs/vue3';
 import { createApp, h } from 'vue';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
+import Vue3Toasity from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css';
 import Layout from './Layout.vue';
 import './style.css';
 import './fonts.css';
@@ -21,7 +23,10 @@ createInertiaApp({
   },
   setup({ el, App, props, plugin }) {
     // Initialize Vue app and Inertia plugin
-    const app = createApp({ render: () => h(App, props) }).use(plugin); // Inertia.js plugin // Vue Router plugin
+    const app = createApp({ render: () => h(App, props) }).use(
+      plugin,
+      Vue3Toasity
+    ); // Inertia.js plugin // Vue Router plugin
 
     // Mount the app to the DOM
     app.mount(el);

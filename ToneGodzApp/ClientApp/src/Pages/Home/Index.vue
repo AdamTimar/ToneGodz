@@ -7,7 +7,7 @@
     <AlwaysLookingForTheToneSection />
     <AboutFlemmingSection />
     <AchieveYourVisionSection />
-    <LimitedTimeOfferSection />
+    <!-- <LimitedTimeOfferSection /> -->
     <ExclusiveBundleSection />
     <FAQSection />
   </div>

@@ -1,6 +1,7 @@
 using System.Text;
 using InertiaCore;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
@@ -74,6 +75,14 @@ public class AccountController : Controller
                 }
                 else if (result.IsNotAllowed)
                 {
+                    var user = await _userManager.FindByEmailAsync(loginModel.Email);
+                    if (user != null)
+                    {
+                        if (user.EmailConfirmed == false)
+                        {
+                            ModelState.AddModelError("message", "Please confirm your email address.");
+                        }
+                    }
                     ModelState.AddModelError("message", "Your account is not allowed to log in.");
                 }
                 else if (result.RequiresTwoFactor)
@@ -101,6 +110,7 @@ public class AccountController : Controller
         return Inertia.Render("Account/Register");
     }
 
+
     [HttpPost("Register")]
     public async Task<IActionResult> Register([FromBody] RegisterModel registerModel, string returnUrl = null)
     {
@@ -108,12 +118,12 @@ public class AccountController : Controller
 
         if (ModelState.IsValid)
         {
-            var user = new UserEntity { UserName = registerModel.Email, Email = registerModel.Email, TermsOfUseAccepted = true };
-            if (await _context.Customers.FirstOrDefaultAsync(x => x.Email == registerModel.Email) == null)
-            {
-                ModelState.AddModelError("message", "User with this email hasn't purchased the product yet.");
-                return Inertia.Render("Account/Register");
-            }
+            var user = new UserEntity { UserName = registerModel.Email, Email = registerModel.Email, CreatedAt = DateTime.Now, TermsOfUseAccepted = true };
+            // if (await _context.Customers.FirstOrDefaultAsync(x => x.Email == registerModel.Email) == null)
+            // {
+            //     ModelState.AddModelError("message", "User with this email hasn't purchased the product yet.");
+            //     return Inertia.Render("Account/Register");
+            // }
 
             var result = await _userManager.CreateAsync(user, registerModel.Password);
             if (result.Succeeded)
@@ -131,8 +141,7 @@ public class AccountController : Controller
                 await _emailSenderService.SendMail(registerModel.Email, "Tonegodz.com Account Confirmation", $"<h2>Confirm Your Email Address</h2><p>Please click the link below to confirm your email:</p><a href=\"{callbackUrl}\">Confirm My Email</a>");
                 if (_userManager.Options.SignIn.RequireConfirmedAccount)
                 {
-                    return Inertia.Render("Account/ConfirmEmail",
-                                          new { email = registerModel.Email });
+                    return RedirectToAction("ConfirmEmail", new { email = registerModel.Email });
                 }
                 else
                 {
@@ -172,7 +181,7 @@ public class AccountController : Controller
     }
 
     [HttpGet("ConfirmEmail")]
-    public IActionResult ConfirmEmail()
+    public IActionResult ConfirmEmail(string? email)
     {
         return Inertia.Render("Account/ConfirmEmail");
     }
@@ -230,6 +239,44 @@ public class AccountController : Controller
         }
     }
 
+    [HttpGet("ResendConfirmationEmail")]
+    public IActionResult ResendConfirmationEmail()
+    {
+        return Inertia.Render("Account/ResendConfirmationEmail");
+    }
+
+    [HttpPost("ResendConfirmationEmail")]
+    public async Task<IActionResult> ResendConfirmationEmail([FromBody] ResendConfirmationEmailModel resendConfirmationEmailModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(new { message = ModelState.First().Value.Errors.First().ErrorMessage });
+        }
+        var user = await _userManager.FindByEmailAsync(resendConfirmationEmailModel.Email);
+
+        if (user == null)
+        {
+            return NotFound(new { message = "User not found" });
+        }
+
+        if (user.EmailConfirmed)
+        {
+            return Conflict(new { message = "Email is already confirmed." });
+        }
+
+        var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+        code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+        var callbackUrl = Url.Action(
+            "Confirmation",
+            "Account",
+            new { userId = user.Id, code = code },
+            protocol: Request.Scheme);
+
+        await _emailSenderService.SendMail(resendConfirmationEmailModel.Email, "Tonegodz.com Account Confirmation", $"<h2>Confirm Your Email Address</h2><p>Please click the link below to confirm your email:</p><a href=\"{callbackUrl}\">Confirm My Email</a>");
+
+        return Ok(new { message = "Confirmation email sent." });
+    }
+
     [HttpPost("forgotpassword")]
     public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordModel forgotPasswordModel)
     {
@@ -253,9 +300,10 @@ public class AccountController : Controller
 
             await _emailSenderService.SendMail(forgotPasswordModel.Email, "Update password", $"<h2>Reset your password</h2><p>Please click the link below to reset your password:</p><a href=\"{callbackUrl}\">Reset pasword</a>");
 
+            return Inertia.Render("Account/CheckInboxPasswordReset");
         }
+        return Inertia.Render("Account/ForgotPassword");
 
-        return Inertia.Render("Account/CheckInboxPasswordReset");
     }
 
     [HttpGet("PasswordReset")]

@@ -1,18 +1,12 @@
 <script setup>
-import Primarybutton from '@/Components/PrimaryButton.vue';
-import { router, useForm } from '@inertiajs/vue3';
-import { toast } from 'vue3-toastify';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import { useForm } from '@inertiajs/vue3';
 import axios from 'axios';
-
-const redirectToLogin = () => {
-  router.visit('/account/login');
-};
-
+import { toast } from 'vue3-toastify';
 const form = useForm({
   email: '',
 });
 
-const email = new URLSearchParams(window.location.search).get('email');
 const submit = () => {
   const lastTime = sessionStorage.getItem('lastPressTime');
   if (lastTime) {
@@ -26,7 +20,7 @@ const submit = () => {
     } else {
       axios
         .post('/account/ResendConfirmationEmail', {
-          email: email,
+          email: form.email,
         })
         .then(() => {
           toast.success('Confirmation email sent', {
@@ -48,7 +42,7 @@ const submit = () => {
   } else {
     axios
       .post('/account/ResendConfirmationEmail', {
-        email: email,
+        email: form.email,
       })
       .then(() => {
         toast.success('Confirmation email sent', {
@@ -79,41 +73,47 @@ const submit = () => {
         <h1
           class="text-xl font-bold leading-tight tracking-tight text-secondary md:text-2xl"
         >
-          Confirm your account
+          Resend confirmation email
         </h1>
-
+        <div v-id="form.errors.message" class="text-error">
+          {{ form.errors.message }}
+        </div>
         <div class="space-y-4 md:space-y-6">
-          <div>Check your inbox to confirm your account</div>
-          <div class="w-full flex flex-col center">
-            <Primarybutton
-              @click="redirectToLogin()"
-              type="button"
-              class="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-            >
-              Back to login
-            </Primarybutton>
-            <div class="mt-4" v-if="email">
-              <form>
-                <input type="hidden" v-model="form.email" />
-                <a
-                  href="#"
-                  class="text-sm text-secondary bg-transparent p-0"
-                  type="submit"
-                  @click.prevent="submit"
-                >
-                  Resend confirmation email to {{ email }}
-                </a>
-              </form>
+          <div>
+            <label for="email" class="block mb-2 text-sm font-medium">
+              Email
+            </label>
+            <input
+              type="email"
+              name="email"
+              id="email"
+              v-model="form.email"
+              class="bg-transparent border border-tertiary-300 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              placeholder="name@company.com"
+              required=""
+            />
+            <div v-id="form.errors.email" class="text-error">
+              {{ form.errors.email }}
             </div>
+          </div>
+
+          <!-- <a
+              href="/login"
+              class="text-sm font-medium text-primary hover:underline dark:text-primary-500"
+            >
+              Already have an account?
+            </a> -->
+          <div class="w-full flex flex-col center">
+            <PrimaryButton
+              class="w-1/2 mx-auto text-white bg-primary-600 hover:bg-primary-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+              type="submit"
+              @click="submit"
+            >
+              Send email
+            </PrimaryButton>
           </div>
         </div>
       </div>
     </div>
   </div>
 </template>
-
-<style scoped>
-button:hover {
-  border-color: transparent;
-}
-</style>

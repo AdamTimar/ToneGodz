@@ -51,7 +51,8 @@ namespace ToneGodzApp.Services
                 new CustomerEntity { Email = "leon.lundqvist06@gmail.com"  },
                 new CustomerEntity { Email = "joebarresi@mac.com"},
                 new CustomerEntity { Email = "elekesizsak@gmail.com" },
-                new CustomerEntity { Email = "timaradam19@gmail.com" }
+                new CustomerEntity { Email = "timaradam19@gmail.com" },
+                new CustomerEntity { Email = "kor@milliomosegyetem.com" },
             };
 
             foreach (var customer in customersToAdd)
@@ -74,7 +75,8 @@ namespace ToneGodzApp.Services
                    && c.Email != "antonioguitars@gmail.com" && c.Email != "carl@10fold.dk"
                    && c.Email != "nicolasboriew@gmail.com" && c.Email != "tamastar2099@hotmail.com"
                    && c.Email != "leon.lundqvist06@gmail.com" && c.Email != "joebarresi@mac.com"
-                   && c.Email != "elekesizsak@gmail.com" && c.Email != "timaradam19@gmail.com")
+                   && c.Email != "elekesizsak@gmail.com" && c.Email != "timaradam19@gmail.com"
+                   && c.Email != "kor@milliomosegyetem.com")
                 {
                     var customer = stripeCustomers.FirstOrDefault(cStripe => cStripe.Email == c.Email);
                     if (customer == null)

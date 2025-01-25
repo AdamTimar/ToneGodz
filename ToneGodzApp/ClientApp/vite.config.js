@@ -41,4 +41,7 @@ export default defineConfig({
     // Disable HMR in production to avoid connections to the dev server
     hmr: process.env.NODE_ENV !== 'production',
   },
+  optimizeDeps: {
+    exclude: ['vue3-toastify'], // Exclude the problematic package from optimization
+  },
 });

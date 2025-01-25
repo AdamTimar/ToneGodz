@@ -11,7 +11,6 @@ let url = '/account/login';
 const returnUrl = new URLSearchParams(window.location.search).get('ReturnUrl');
 if (returnUrl) {
   url = url + `?returnUrl=${returnUrl}`;
-  console.log(url);
 }
 
 const submit = () => {
@@ -114,6 +113,15 @@ const submit = () => {
                 class="font-medium text-primary hover:underline dark:text-primary-500"
               >
                 Sign up
+              </a>
+            </p>
+            <p class="text-sm mx-auto mt-2 font-light text-secondary">
+              Didn't get confimation email? Click
+              <a
+                href="/account/resendconfirmationemail"
+                class="font-medium text-primary hover:underline dark:text-primary-500"
+              >
+                here
               </a>
             </p>
           </div>

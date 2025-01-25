@@ -9,10 +9,8 @@ const form = useForm({
 
 const submit = () => {
   form.post('/account/register', {
-    onError: (errors) => {
-    },
-    onSuccess: () => {
-    },
+    onError: (errors) => {},
+    onSuccess: () => {},
   });
 };
 </script>
@@ -125,7 +123,7 @@ const submit = () => {
             <p class="text-sm mx-auto mt-2 font-light text-secondary">
               Already have an account?
               <a
-                href="/login"
+                href="/account/login"
                 class="font-medium ml-2 text-primary hover:underline dark:text-primary-500"
               >
                 Sign in
