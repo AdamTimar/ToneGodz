@@ -2,14 +2,14 @@
   <div class="access-denied">
     <h1>Access Denied</h1>
     <p>You do not have permission to access this page.</p>
-    <p v-if="returnUrl === '/masterclass'">
-      You didn't purchase our masterclass yet.
-    </p>
-    <span>
-      Click
-      <a href="/purchase">here</a>
-      to get access!
-    </span>
+    <div v-if="returnUrl === '/masterclass'">
+      <p>You didn't purchase our masterclass yet.</p>
+      <span>
+        Click
+        <a href="/purchase">here</a>
+        to get access!
+      </span>
+    </div>
   </div>
 </template>
 

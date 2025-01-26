@@ -65,6 +65,17 @@ public class AccountController : Controller
                 var hasAccess = await _context.Customers.AnyAsync(x => x.Email == loginModel.Email);
                 var user = await _userManager.FindByEmailAsync(loginModel.Email);
                 _cache.Set($"HasAccess:{user.Id}", hasAccess, TimeSpan.FromHours(1));
+                if (returnUrl.ToLower().StartsWith("/admin"))
+                {
+                    if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    {
+                        return RedirectToAction("Index", "Admin");
+                    }
+                    else
+                    {
+                        return RedirectToAction("AccessDenied", "Account");
+                    }
+                }
                 return LocalRedirect(returnUrl);
             }
             else
