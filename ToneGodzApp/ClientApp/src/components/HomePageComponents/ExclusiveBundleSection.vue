@@ -150,13 +150,27 @@
 <script setup>
 import LargeButton from '@/components/LargeButton.vue';
 
-import { router } from '@inertiajs/vue3';
+import { router, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
 
 const redirectToRegister = () => {
   router.visit('account/register');
 };
 
 const redirectToPurchase = () => {
+  if (window.location.hostname !== 'localhost') {
+    if (window.fbq) {
+      const hasAccess = page.props.auth?.hasAccess;
+      if (hasAccess === undefined) {
+        fbq('track', 'Purchase button clicked by user without access');
+      } else if (!hasAccess) {
+        fbq('track', 'Purchase button clicked by ' + page.props.auth.email);
+      }
+    } else {
+      console.error('fbq is not loaded yet.');
+    }
+  }
   window.location.href = '/purchase';
 };
 </script>

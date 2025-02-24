@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Hangfire;
 using Hangfire.MySql;
 using Hangfire.SqlServer;
@@ -231,17 +232,36 @@ app.Use(async (context, next) =>
 
     if (userName != null)
     {
-        var userManager = context.RequestServices.GetRequiredService<UserManager<UserEntity>>();
-        var user = await userManager.FindByEmailAsync(userName);
-        if (user != null)
+        var sessionData = context.Session.GetString("UserData");
+
+        if (string.IsNullOrEmpty(sessionData))
         {
-            Inertia.Share(new Dictionary<string, object?>
+            var userManager = context.RequestServices.GetRequiredService<UserManager<UserEntity>>();
+            var user = await userManager.FindByEmailAsync(userName);
+            if (user != null)
             {
-                ["auth"] = new
+                var dbContext = context.RequestServices.GetRequiredService<AppDbContext>();
+                var userData = new
                 {
                     Id = user.Id,
-                    Email = user.Email
-                }
+                    Email = user.Email,
+                    HasAccess = dbContext.Customers.Any(x => x.Email == user.Email)
+                };
+                // Store user info in session
+                context.Session.SetString("UserData", System.Text.Json.JsonSerializer.Serialize(userData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+                Inertia.Share(new Dictionary<string, object?>
+                {
+                    ["auth"] = userData
+                });
+            }
+        }
+        else
+        {
+            // If user data is already in session, just use it
+            var userData = JsonConvert.DeserializeObject<Dictionary<string, object>>(sessionData);
+            Inertia.Share(new Dictionary<string, object?>
+            {
+                ["auth"] = userData
             });
         }
     }

@@ -21,18 +21,6 @@ namespace ToneGodzApp.Services
         {
             return _client;
         }
-
-        public async Task<Customer?> GetCustomerByEmailAsync(string email)
-        {
-            var options = new CustomerListOptions
-            {
-                Email = email,
-                Limit = 1,
-            };
-            var customers = await _customerService.ListAsync(options);
-            return customers.FirstOrDefault();
-        }
-
         public async Task<List<Customer>> GetCustomers()
         {
             string lastCustomerId = null;
@@ -67,7 +55,7 @@ namespace ToneGodzApp.Services
 
                 foreach (var customer in customers)
                 {
-                    if (await GetPaymentIntentByEmail(customer.Email) != null)
+                    if (await GetPaymentIntentByCustomerId(customer.Id) != null)
                     {
                         if (customerEmails.FirstOrDefault(x => x.Email == customer.Email) == null)
                             customerEmails.Add(customer);
@@ -78,10 +66,9 @@ namespace ToneGodzApp.Services
 
             return customerEmails;
         }
-        public async Task<PaymentIntent?> GetPaymentIntentByEmail(string email)
+        public async Task<PaymentIntent?> GetPaymentIntentByCustomerId(string id)
         {
-            var customer = await GetCustomerByEmailAsync(email);
-
+            var customer = await _customerService.GetAsync(id);
             if (customer == null)
                 return null;
 

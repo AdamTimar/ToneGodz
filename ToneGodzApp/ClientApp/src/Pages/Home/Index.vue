@@ -17,6 +17,14 @@
 const params = new URLSearchParams(window.location.search);
 
 onMounted(() => {
+  if (window.location.hostname !== 'localhost') {
+    if (window.fbq) {
+      fbq('track', 'PageView');
+    } else {
+      console.error('fbq is not loaded yet.');
+    }
+  }
+
   if (params.get('scrollToAboutUs') === 'true') {
     const targetElement = document.getElementById('achieveYourVision');
     if (targetElement) {

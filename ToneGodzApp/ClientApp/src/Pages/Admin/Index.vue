@@ -18,7 +18,7 @@
         </div>
       </template>
       <template #hasAccess="row">
-        <div v-if="row.value.confirmed">
+        <div v-if="row.value.hasAccess">
           <CheckCircleIcon class="text-green-500 w-8 h-8 mx-auto" />
         </div>
         <div v-else>
