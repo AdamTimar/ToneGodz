@@ -3,7 +3,7 @@
     id="aboutFlemming"
     class="background-image w-full flex flex-row justify-end mt-[54rem]"
     style="
-      background-image: url('AboutFlemmingBackground.svg');
+      background-image: url('AboutFlemmingBackground.webp');
       background-repeat: no-repeat;
       background-size: cover;
       min-height: 59rem;
@@ -16,7 +16,9 @@
         "Working with Metallica was a groundbreaking experience. My mission
         always was to help the artist achieve his vision. Today, my goal is the
         same, to help you achieve the sound. I’m opening the vault of techniques
-        and secrets that shaped those iconic albums."  - Flemming Rasmussen -
+        and secrets that shaped those iconic albums."
+        <br />
+          - Flemming Rasmussen -
       </p>
     </div>
     <div class="text-container p-8 mt-28 rounded-md max-w-[70%]">
@@ -35,6 +37,14 @@
         and innovative techniques have cemented his reputation as a master
         producer.
       </p>
+
+      <div class="">
+        <iframe
+          class="w-[75%]"
+          height="345"
+          src="https://www.youtube.com/embed/I9EFB5JU-S0"
+        ></iframe>
+      </div>
     </div>
   </div>
 </template>
@@ -45,7 +55,7 @@
 @media screen and (max-width: 1080px) {
   .background-image {
     flex-direction: column;
-    background-image: url('AboutFlemmingBackground.svg');
+    background-image: url('AboutFlemmingBackground.webp');
     background-repeat: no-repeat;
     background-position: 20% 0%;
     /* background-size: 1000px !important; */

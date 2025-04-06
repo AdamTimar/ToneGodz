@@ -8,13 +8,18 @@
     <AboutFlemmingSection />
     <AchieveYourVisionSection />
     <!-- <LimitedTimeOfferSection /> -->
+    <SamplesSection />
     <ExclusiveBundleSection />
     <FAQSection />
   </div>
 </template>
 
 <script setup>
+import { useHead } from '@vueuse/head';
 const params = new URLSearchParams(window.location.search);
+useHead({
+  title: 'Tonegodz',
+});
 
 onMounted(() => {
   if (window.location.hostname !== 'localhost') {
@@ -48,5 +53,6 @@ import AchieveYourVisionSection from '@/components/HomePageComponents/AchieveYou
 import LimitedTimeOfferSection from '@/components/HomePageComponents/LimitedTimeOfferSection.vue';
 import ExclusiveBundleSection from '@/components/HomePageComponents/ExclusiveBundleSection.vue';
 import FAQSection from '@/components/HomePageComponents/FAQSection.vue';
+import SamplesSection from '@/components/HomePageComponents/SamplesSection.vue';
 import { onMounted } from 'vue';
 </script>

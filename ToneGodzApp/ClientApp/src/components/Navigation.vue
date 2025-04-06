@@ -1,9 +1,14 @@
 <template>
   <div class="flex justify-between nav-container items-center px-10 py-6">
     <div class="w-1/4 flex justify-items-start">
-      <img src="/logo.svg" alt="Logo" class="logo w-48" />
+      <a href="/">
+        <img src="/logo.svg" alt="Logo" class="logo w-48" />
+      </a>
     </div>
     <nav
+      :class="{
+        hidden: !page.props.auth,
+      }"
       class="w-2/4 flex justify-center gap-16 flex-grow text-2xl tracking-wide"
     >
       <a
@@ -87,16 +92,30 @@
         </svg>
       </label>
       <nav class="menu">
-        <a href="/" class="text-secondary hover:text-hoverPrimary px-4">Home</a>
+        <a
+          href="/"
+          class="text-secondary hover:text-hoverPrimary px-4"
+          :class="{
+            hidden: !page.props.auth || !page.props.auth.hasAccess,
+          }"
+        >
+          Home
+        </a>
         <a
           href="/#achieveYourVision"
           class="text-secondary hover:text-hoverPrimary px-4"
+          :class="{
+            hidden: !page.props.auth || !page.props.auth.hasAccess,
+          }"
         >
           About Us
         </a>
         <a
           href="/masterclass"
           class="text-secondary hover:text-hoverPrimary border-transparent px-4"
+          :class="{
+            hidden: !page.props.auth || !page.props.auth.hasAccess,
+          }"
         >
           Masterclass
         </a>
@@ -109,7 +128,7 @@
         </PrimaryButton>
 
         <div v-else class="navigation-button max-w-96 break-all">
-          {{ page.props.auth.email }}
+          {{ page.props.auth.email || !page.props.auth.hasAccess }}
         </div>
 
         <PrimaryButton
@@ -141,6 +160,10 @@ const page = usePage();
 
 const currentPath = computed(() => {
   return window.location.pathname;
+});
+
+onMounted(() => {
+  console.log(page.props.auth);
 });
 
 function navigateAndScroll() {

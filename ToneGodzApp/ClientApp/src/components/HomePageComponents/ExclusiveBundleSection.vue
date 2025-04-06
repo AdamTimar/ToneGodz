@@ -6,7 +6,7 @@
       >
         EXCLUSIVE BUNDLE
       </p>
-      <p class="title text-left text-4xl text-secondary font-extrabold m-auto">
+      <p class="title text-left text-3xl text-secondary font-extrabold m-auto">
         The limited time offer will give you access to:
       </p>
 
@@ -27,8 +27,9 @@
                 d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
               />
             </svg>
-            <p class="text-3xl text-secondary ml-4 mt-1">
-              Full 15+ Hour Masterclass ($479)
+            <p class="text-2xl text-secondary ml-4 mt-1">
+              Full 15+ Hour Masterclass
+              <span class="line-through decoration-primary">($380)</span>
             </p>
           </div>
         </div>
@@ -48,8 +49,9 @@
                 d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
               />
             </svg>
-            <p class="text-3xl text-secondary ml-4 mt-1">
-              Impulse Response (IR) Pack For Guitar And Bass ($99)
+            <p class="text-2xl text-secondary ml-4 mt-1">
+              The ToneGodz IR Pack For Guitar And Bass
+              <span class="line-through decoration-primary">($99)</span>
             </p>
           </div>
         </div>
@@ -69,8 +71,9 @@
                 d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
               />
             </svg>
-            <p class="text-3xl text-secondary ml-4 mt-1">
-              Webinar Access ($129)
+            <p class="text-2xl text-secondary ml-4 mt-1">
+              ...The Justice Drums Sample Pack
+              <span class="line-through decoration-primary">($99)</span>
             </p>
           </div>
         </div>
@@ -90,8 +93,9 @@
                 d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
               />
             </svg>
-            <p class="text-3xl text-secondary ml-4 mt-1">
-              Lifetime Access To Content
+            <p class="text-2xl text-secondary ml-4 mt-1">
+              Access To Live Webinars
+              <span class="line-through decoration-primary">($129)</span>
             </p>
           </div>
         </div>
@@ -111,14 +115,26 @@
                 d="m18.75 4.5-7.5 7.5 7.5 7.5m-6-15L5.25 12l7.5 7.5"
               />
             </svg>
-            <p class="text-3xl text-secondary ml-4 mt-1">20% Discount</p>
+            <p class="text-2xl text-secondary ml-4 mt-1">
+              Lifetime Access
+              <span class="line-through decoration-primary">($129)</span>
+            </p>
           </div>
         </div>
       </div>
     </div>
     <div class="calculations">
-      <p class="mt-8 ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
-        Stacked Value: $707
+      <p
+        class="total-values mt-8 ml-28 px-8 pt-4 pb-2 text-left text-3xl text-secondary m-auto"
+      >
+        Total Value:
+        <span class="line-through decoration-primary">$707</span>
+      </p>
+      <p
+        class="total-values mt-2 ml-28 px-8 pt-4 pb-2 text-left text-3xl text-secondary m-auto"
+      >
+        Now Only For:
+        <span class="text-primary font-extrabold">$149</span>
       </p>
       <!-- <p class="ml-28 px-8 py-4 text-left text-4xl text-secondary m-auto">
         Bundle Price After Release: $189.99 (No Webinar Included)
@@ -128,20 +144,20 @@
       </p> -->
     </div>
     <div class="button-container flex gap-8 mt-8 mx-28">
-      <LargeButton
+      <!-- <LargeButton
         class="buttons w-[30%] flex gap-5 justify-center"
         @click="redirectToPurchase()"
       >
         <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
-        <p>Order now for $149</p>
-      </LargeButton>
+        <p>Buy Now</p>
+      </LargeButton> -->
+
       <LargeButton
-        v-if="!$page.props.auth"
-        class="buttons w-[30%] flex gap-5 justify-center"
-        @click="redirectToRegister()"
+        class="buttons w-[30%] justify-center bg-[#54ae61] flex gap-5 hover:bg-[#3b7b45] border-none lets-see-button"
+        @click="redirectToPurchase()"
       >
-        <img src="accounticon.svg" alt="cart" class="size-8 cursor-pointer" />
-        Create my account for now
+        <p class="!text-2xl">Buy Now</p>
+        <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
       </LargeButton>
     </div>
   </div>
@@ -153,10 +169,6 @@ import LargeButton from '@/components/LargeButton.vue';
 import { router, usePage } from '@inertiajs/vue3';
 
 const page = usePage();
-
-const redirectToRegister = () => {
-  router.visit('account/register');
-};
 
 const redirectToPurchase = () => {
   if (window.location.hostname !== 'localhost') {
@@ -185,6 +197,10 @@ const redirectToPurchase = () => {
 }
 
 @media screen and (max-width: 860px) {
+  #exclusiveBundle {
+    margin-top: 0 !important;
+  }
+
   .items-container {
     width: 100%;
   }
@@ -200,7 +216,7 @@ const redirectToPurchase = () => {
   }
 
   .title {
-    font-size: 2.5rem;
+    font-size: 2.25rem;
     text-align: center;
   }
 
@@ -218,7 +234,8 @@ const redirectToPurchase = () => {
 
   .item p {
     text-align: left;
-    font-size: 2rem;
+    /* font-size: 2rem; */
+    font-size: 1.25rem;
     /* line-height: 50px; */
   }
 
@@ -255,6 +272,10 @@ const redirectToPurchase = () => {
     width: 2.5rem; /* Adjust as needed */
     height: 2.5rem; /* Match the width */
     flex-shrink: 0; /* Prevent shrinking */
+  }
+
+  .total-values {
+    font-size: 1.75rem !important;
   }
 }
 </style>

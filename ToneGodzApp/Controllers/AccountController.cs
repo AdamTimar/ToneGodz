@@ -237,7 +237,7 @@ public class AccountController : Controller
         try
         {
             await _signInManager.SignOutAsync();
-
+            HttpContext.Session.Remove("UserData");
             _logger.LogInformation("User logged out.");
 
             return Ok(new { message = "Logged out successfully" });

@@ -6,7 +6,10 @@ import 'vue3-toastify/dist/index.css';
 import Layout from './Layout.vue';
 import './style.css';
 import './fonts.css';
+import { AVPlugin } from 'vue-audio-visual';
+import { createHead } from '@vueuse/head';
 
+const head = createHead();
 createInertiaApp({
   resolve: (name) => {
     // Dynamically resolve the page component based on the name
@@ -25,7 +28,9 @@ createInertiaApp({
     // Initialize Vue app and Inertia plugin
     const app = createApp({ render: () => h(App, props) }).use(
       plugin,
-      Vue3Toasity
+      Vue3Toasity,
+      AVPlugin,
+      head
     ); // Inertia.js plugin // Vue Router plugin
 
     // Mount the app to the DOM

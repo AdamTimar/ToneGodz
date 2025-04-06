@@ -5,7 +5,7 @@
   >
     <div class="text-container p-8 rounded-md">
       <p class="text-center text-6xl text-primary font-bold mb-4 m-auto">
-        Achieve your vision
+        What You Get
       </p>
       <div
         class="content flex flex-col justify-between mt-18 max-w-[70%] mx-auto"
@@ -151,13 +151,16 @@
                 />
               </svg>
               <p class="text-2xl text-primary font-bold mb-4 ml-4">
-                Get Inspired
+                ...The Justice Drums Sample Pack
               </p>
             </div>
 
             <p class="text-xl text-secondary font-bolder ml-10">
-              Find inspiration for your own projects by diving deep into the
-              creative processes of a legendary producer.
+              Unleash the power of legendary drum sounds with the exclusive Drum
+              Sample Pack included in the masterclass. Featuring authentic
+              equipment, meticulously captured by Flemming Rasmussen, these
+              samples deliver the raw power and punch of Justice. Possibly the
+              heaviest and most iconic kick drum sound ever.
             </p>
           </div>
           <div class="item mt-5">
@@ -204,6 +207,10 @@
   .item-container {
     flex-direction: column !important;
     /* align-items: center; */
+  }
+
+  .backstage-pass-section {
+    margin-top: 0rem !important;
   }
 
   .item {

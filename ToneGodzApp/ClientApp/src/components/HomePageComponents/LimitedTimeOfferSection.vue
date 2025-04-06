@@ -18,10 +18,10 @@
         Rasmussen himself. Truly a once-in-a-lifetime opportunity!
       </p>
       <LargeButton
-        class="mx-auto !bg-[#54ae61] px-9 flex gap-5"
+        class="mx-auto bg-[#54ae61] hover:bg-[#3b7b45] px-9 flex gap-5"
         @click="redirectToPurchase()"
       >
-        <p>Purchase</p>
+        <p>Buy Now</p>
         <img src="shoppingcart.svg" alt="cart" class="size-8 cursor-pointer" />
       </LargeButton>
       <p class="text-center text-2xl text-secondary font-bolder mt-16 m-auto">

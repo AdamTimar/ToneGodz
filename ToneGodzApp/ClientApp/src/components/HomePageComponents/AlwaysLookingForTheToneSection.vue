@@ -1,5 +1,5 @@
 <template>
-  <div class="w-full flex justify-center mt-20">
+  <div class="always-section w-full flex justify-center mt-20">
     <div class="p-8 rounded-md">
       <p
         class="title text-center text-6xl font-bold mb-4 w-[100%] m-auto text-primary"
@@ -13,7 +13,7 @@
       </p>
       <div class="content-container flex">
         <div class="content-image absolute left-0">
-          <img src="singleFlemming.svg" alt="Flemming" />
+          <img src="singleFlemming.webp" alt="Flemming" />
         </div>
 
         <div class="text-container absolute right-20 mx-60 my-32 max-w-[30%]">
@@ -34,10 +34,15 @@
             alt="until-now"
           />
           <LargeButton
-            class="meet-flemming-button max-w-[50%] mt-48 flex mx-auto"
-            @click="scrollToSection('aboutFlemming')"
+            class="mx-auto bg-[#54ae61] px-9 flex gap-5 mt-32 hover:bg-[#3b7b45] border-none lets-see-button"
+            @click="redirectToPurchase()"
           >
-            Meet Flemming Rasmussen
+            <p>Buy Now</p>
+            <img
+              src="shoppingcart.svg"
+              alt="cart"
+              class="size-8 cursor-pointer"
+            />
           </LargeButton>
         </div>
       </div>
@@ -60,6 +65,10 @@ const scrollToSection = (sectionId) => {
 @media screen and (max-width: 860px) {
   .title {
     font-size: 2.5rem;
+  }
+
+  .always-section {
+    margin-top: 0 !important;
   }
 
   .subtitle {

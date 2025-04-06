@@ -9,7 +9,7 @@
     <!-- This will render the page content -->
   </div>
 
-  <Footer class="mt-20" />
+  <Footer class="mt-5" />
   <!-- Optional footer -->
 </template>
 
@@ -22,7 +22,6 @@ import { usePage } from '@inertiajs/vue3';
 const page = usePage();
 
 const auth = computed(() => page.props.auth);
-
 </script>
 
 <style scoped></style>

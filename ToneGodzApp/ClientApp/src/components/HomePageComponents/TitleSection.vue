@@ -2,29 +2,46 @@
   <div
     class="background-image w-full flex items-center justify-end"
     style="
-      background-image: url('C.svg');
+      background-image: url('C.webp');
       background-repeat: no-repeat;
       background-size: cover;
       min-height: 45rem;
     "
   >
     <div class="text-container p-8 rounded-md max-w-[48%]">
+      <div class="text-center mb-5">
+        <PrimaryButton
+          v-if="!page.props.auth || !page.props.auth.hasAccess"
+          @click="redirectToPurchase()"
+          class="w-44 text-2xl h-14 bg-transparent border border-secondary hover:border-hoverPrimary hover:bg-hoverPrimary"
+        >
+          Buy now
+        </PrimaryButton>
+      </div>
       <h1 class="text-left right-2 text-8xl font-bold mb-4">
         Nail the art of metal production
       </h1>
       <p class="text-left text-4xl text-primary font-extrabold">
-        with Flemming Rasmussen
+        with legendary Metallica producer Flemming Rasmussen
       </p>
     </div>
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import PrimaryButton from '@/components/PrimaryButton.vue';
+import { usePage } from '@inertiajs/vue3';
+const page = usePage();
+
+const redirectToPurchase = () => {
+  window.location.href = '/purchase';
+};
+</script>
 
 <style scoped>
 @media screen and (max-width: 1080px) {
   .background-image {
-    background-image: url('C.svg');
+    background-image: url('C.webp');
     background-repeat: no-repeat;
     /* background-size: 1000px !important; */
     max-width: 100%;
