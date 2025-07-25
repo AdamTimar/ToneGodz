@@ -40,7 +40,7 @@
 
       <div class="">
         <iframe
-          class="w-[75%]"
+          class="flemming-youtube w-[75%]"
           height="345"
           src="https://www.youtube.com/embed/I9EFB5JU-S0"
         ></iframe>
@@ -53,6 +53,10 @@
 
 <style scoped>
 @media screen and (max-width: 1080px) {
+  .flemming-youtube {
+    width: 100%;
+  }
+
   .background-image {
     flex-direction: column;
     background-image: url('AboutFlemmingBackground.webp');

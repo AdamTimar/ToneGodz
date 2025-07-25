@@ -9,6 +9,7 @@
     <AchieveYourVisionSection />
     <!-- <LimitedTimeOfferSection /> -->
     <SamplesSection />
+    <TestimonialsSection />
     <ExclusiveBundleSection />
     <FAQSection />
   </div>
@@ -54,5 +55,6 @@ import LimitedTimeOfferSection from '@/components/HomePageComponents/LimitedTime
 import ExclusiveBundleSection from '@/components/HomePageComponents/ExclusiveBundleSection.vue';
 import FAQSection from '@/components/HomePageComponents/FAQSection.vue';
 import SamplesSection from '@/components/HomePageComponents/SamplesSection.vue';
+import TestimonialsSection from '@/components/HomePageComponents/TestimonialsSection.vue';
 import { onMounted } from 'vue';
 </script>

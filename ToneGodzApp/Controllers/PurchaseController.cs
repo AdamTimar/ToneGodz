@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 using Hangfire;
 using InertiaCore;
 using Microsoft.AspNetCore.Authorization;
@@ -31,9 +32,11 @@ public class PurchaseController : Controller
     private readonly IPaymentService _paymentService;
     private readonly IBackgroundJobClient _backgroundJobClient;
 
+    private readonly IMemoryCache _cache;
+
     public PurchaseController(ILogger<HomeController> logger, AppDbContext context, IEmailSenderService emailSenderService,
      StripeService stripeService, ICustomerService customerService, IConfiguration configuration,
-    IBackgroundJobClient backgroundJobClient, IPaymentService paymentService)
+    IBackgroundJobClient backgroundJobClient, IPaymentService paymentService, IMemoryCache cache)
     {
         _logger = logger;
         _context = context;
@@ -46,10 +49,11 @@ public class PurchaseController : Controller
         _sessionService = new SessionService(_stripeService.GetClient());
         _stripeCustomerService = new CustomerService(_stripeService.GetClient());
         _backgroundJobClient = backgroundJobClient;
+        _cache = cache;
     }
 
     [HttpGet]
-    [Authorize]
+    //[Authorize]
     public async Task<IActionResult> Index()
     {
         var customer = await _customerService.GetCustomerByEmail(User.Identity.Name);
@@ -57,8 +61,6 @@ public class PurchaseController : Controller
         {
             return Inertia.Render("Purchase/AlreadyPurchased");
         }
-
-        var newCustomer = await _stripeService.CreateCustomerAsync(User.Identity.Name);
 
         var price = _configuration["Stripe:Price"];
         try
@@ -82,7 +84,7 @@ public class PurchaseController : Controller
                 Mode = "payment",
                 SuccessUrl = _configuration["AppUrl"] + "/Purchase/ProcessPayment?session_id={CHECKOUT_SESSION_ID}",
                 CancelUrl = _configuration["AppUrl"],
-                Customer = newCustomer.Id,
+                //Customer = newCustomer.Id,
                 BillingAddressCollection = "required",
                 PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
@@ -90,6 +92,11 @@ public class PurchaseController : Controller
                 }
             };
 
+            if (User.Identity.IsAuthenticated)
+            {
+                var newCustomer = await _stripeService.CreateCustomerAsync(User.Identity.Name);
+                options.Customer = newCustomer.Id;
+            }
 
             var service = new SessionService(_stripeService.GetClient());
             var session = service.Create(options);
@@ -126,7 +133,18 @@ public class PurchaseController : Controller
             return Conflict("Session id already used");
         }
 
-        var customer = await _stripeCustomerService.GetAsync(session.CustomerId);
+        Customer customer;
+        if (session.CustomerId != null)
+        {
+            customer = await _stripeCustomerService.GetAsync(session.CustomerId);
+        }
+        else
+        {
+            customer = await _stripeCustomerService.CreateAsync(new CustomerCreateOptions
+            {
+                Email = session.CustomerDetails?.Email,
+            });
+        }
 
         await _context.AddAsync(new CustomerEntity { Email = customer.Email });
 
@@ -141,9 +159,24 @@ public class PurchaseController : Controller
             _logger.LogError(ex.Message);
         }
 
+        if (User.Identity.IsAuthenticated)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
+            if (user != null)
+            {
+                var userData = new
+                {
+                    Id = user.Id,
+                    Email = user.Email,
+                    HasAccess = true
+                };
+
+                HttpContext.Session.SetString("UserData", System.Text.Json.JsonSerializer.Serialize(userData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
+                _cache.Set("UserData", userData, TimeSpan.FromHours(1));
+            }
+        }
         return RedirectToAction("Success");
     }
-
 }
 
 

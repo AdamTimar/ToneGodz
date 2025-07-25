@@ -41,16 +41,48 @@ public class AdminController : Controller
     [HttpGet]
     public IActionResult Index()
     {
-        var users = _context.Users.Select(u => new
+        var users = _context.Users.Select(u => new UserInfoDto
         {
             Id = u.Id,
             Email = u.Email,
             Confirmed = u.EmailConfirmed,
             HasAccess = _context.Customers.Any(c => c.Email == u.Email),
-            PurchaseDate = _context.Payments.Where(p => p.UserId == u.Id).Select(p => ((DateTime?)p.Date).Value.ToString("yyyy-MM-dd")).FirstOrDefault()
+            PurchaseDate = _context.Payments
+        .Where(p => p.Email != null && u.Email != null && p.Email.ToLower() == u.Email.ToLower())
+        .Select(p => p.Date.ToString("yyyy-MM-dd"))
+        .FirstOrDefault()
         }).ToList();
 
+        foreach (var c in _context.Customers.ToList())
+        {
+            if (!users.Any(u => u.Email == c.Email))
+            {
+                var payment = _context.Payments.FirstOrDefault(p =>
+                    p.Email != null && c.Email != null &&
+                    p.Email.ToLower() == c.Email.ToLower());
+
+                users.Add(new UserInfoDto
+                {
+                    Id = null,
+                    Email = c.Email,
+                    Confirmed = false,
+                    HasAccess = true,
+                    PurchaseDate = payment?.Date.ToString("yyyy-MM-dd")
+                });
+            }
+        }
+
+
         return Inertia.Render("Admin/Index", new { users = users });
+    }
+
+    public class UserInfoDto
+    {
+        public string Id { get; set; }
+        public string Email { get; set; }
+        public bool Confirmed { get; set; }
+        public bool HasAccess { get; set; }
+        public string PurchaseDate { get; set; }
     }
 }
 

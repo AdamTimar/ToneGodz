@@ -4,7 +4,9 @@
     class="backstage-pass-section background-image w-full flex justify-center mt-20"
   >
     <div class="text-container p-8 rounded-md">
-      <p class="text-center text-6xl text-primary font-bold mb-4 m-auto">
+      <p
+        class="what-you-get text-center text-6xl text-primary font-bold mb-4 m-auto"
+      >
         What You Get
       </p>
       <div
@@ -204,6 +206,10 @@
 }
 
 @media screen and (max-width: 860px) {
+  .what-you-get {
+    font-size: 2.25rem !important;
+  }
+
   .item-container {
     flex-direction: column !important;
     /* align-items: center; */

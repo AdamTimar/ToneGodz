@@ -3,11 +3,11 @@
     class="backstage-pass-section background-image w-full flex justify-center mt-20"
   >
     <div class="text-container p-8 mx-20 flex rounded-md">
-      <div class="w-[45%]">
-        <p class="text-center text-7xl font-bold mb-4 m-auto text-primary">
+      <div class="textsection w-[45%]">
+        <p class="text-center text-6xl font-bold mb-4 m-auto text-primary">
           IR Pack & Drum Samples
         </p>
-        <p class="text-center text-5xl font-bold mb-8 mt-12 m-auto">
+        <p class="thebundle text-center text-4xl font-bold mb-8 mt-12 m-auto">
           The Bundle now comes with studio-grade impulse responses and crushing
           drum samples.
         </p>
@@ -17,7 +17,7 @@
               class="become-the-master text-left text-3xl text-primary mb-4 m-auto"
             >
               The ToneGodz IR Pack
-              <span class="text-3xl text-secondary">
+              <span class="text-xl text-secondary">
                 - 30 meticulously crafted impulse responses for guitar and bass.
                 Featuring both raw and processed IRs, which have been perfected
                 with the legendary Trident A-Range and in some cases Neve
@@ -29,7 +29,7 @@
               class="become-the-master text-left text-3xl text-primary mb-4 m-auto"
             >
               -...The Justice Drums Sample Pack
-              <span class="text-3xl text-secondary">
+              <span class="text-xl text-secondary">
                 -Captured by Flemming Rasmussen himself, these drum samples
                 deliver probably the heaviest, most iconic kick drum sound ever
                 - raw, punchy, and undeniable. Includes .wav and TCI files for
@@ -39,11 +39,16 @@
           </div>
         </div>
       </div>
-      <div class="image-container justify-items-center w-[55%]">
+      <div
+        class="flex flex-col image-container justify-items-center items-center w-[55%]"
+      >
         <img src="IRSamples.webp" alt="Pass" width="480" />
         <div v-for="(file, index) in files" :key="index" class="mt-4">
+          <div class="ml-6 mb-2 font-semibold">
+            {{ file.name }}
+          </div>
           <audio controls>
-            <source :src="file.url" type="audio/ogg" />
+            <source :src="file.url" type="audio/mpeg" />
             Your browser does not support the audio element.
           </audio>
         </div>
@@ -73,12 +78,12 @@ onMounted(() => {
     'JC Clean.mp3',
     'MOP Heavy Gtr.mp3',
     'RTL Heavy Gtr.mp3',
-    'RTL+MOP Bass.mp3',
+    'RTL MOP Bass.mp3',
   ];
 
   audioFiles.forEach((file, index) => {
     files.value.push({
-      name: `Audio ${index + 1}`,
+      name: `${file.substring(0, file.lastIndexOf('.'))}`,
       url: window.location.origin + '/' + file,
       isPlaying: false,
       wavesurfer: null,
@@ -133,6 +138,29 @@ const redirectToPurchase = () => {
 
 <style scoped>
 @media screen and (max-width: 860px) {
+  .image-container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 !important;
+  }
+
+  .thebundle {
+    font-size: 2rem !important;
+  }
+
+  .textsection {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 !important;
+  }
+
+  .text-container {
+    width: 100%;
+    margin: 0 auto;
+    flex-direction: column;
+    align-items: center;
+  }
+
   .backstage-pass-section {
     /* background-image: url('src/assets/backstagePass.svg'); */
     /* background-repeat: no-repeat; */

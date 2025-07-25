@@ -35,6 +35,9 @@
           >
           To access the masterclass, follow these simple steps:
           <!-- list that is numbered -->
+           <div class="pl-8">
+            
+           
             <ol class="list-decimal question-answer pl-24 text-left text-xl text-neutral-500 font-bolder">
                 <li>Click the "Buy Now" button.</li>
                 <li>
@@ -48,6 +51,7 @@
                 instructions on how to access the masterclass.
                 </li>
             </ol>
+        </div>
  
           </p>
         </div>

@@ -9,6 +9,17 @@
       columnFilter="true"
       sortable="true"
     >
+      <template #email="row">
+        <div class="text-left">
+          {{ row.value.email }}
+          <span
+            v-if="row.value.id === null"
+            class="text-red-700 border border-red-700 rounded px-2 ml-2"
+          >
+            - NO TG ACCOUNT YET
+          </span>
+        </div>
+      </template>
       <template #confirmed="row">
         <div v-if="row.value.confirmed">
           <CheckCircleIcon class="text-green-500 w-8 h-8 mx-auto" />

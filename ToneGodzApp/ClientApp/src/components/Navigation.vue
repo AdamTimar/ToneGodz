@@ -7,9 +7,9 @@
     </div>
     <nav
       :class="{
-        hidden: !page.props.auth,
+        hidden: !page.props.auth || !page.props.auth.hasAccess,
       }"
-      class="w-2/4 flex justify-center gap-16 flex-grow text-2xl tracking-wide"
+      class="w-3/5 flex justify-center gap-16 flex-grow text-xl tracking-wide"
     >
       <a
         href="/"
@@ -21,14 +21,14 @@
         Home
       </a>
       <a
-        href="/#achieveYourVision"
+        href="/irpack-drum-sample"
         :class="{
-          '!border-hoverPrimary border-b-2': currentPath === '/about-us',
+          '!border-hoverPrimary border-b-2':
+            currentPath === '/irpack-drum-sample',
         }"
         class="text-secondary hover:text-hoverPrimary border-b-2 border-transparent px-4"
-        @click.prevent="navigateAndScroll()"
       >
-        About Us
+        IR Pack & Drum Sample
       </a>
       <a
         href="/masterclass"
@@ -38,6 +38,15 @@
         class="text-secondary hover:text-hoverPrimary border-b-2 border-transparent px-4"
       >
         Masterclass
+      </a>
+      <a
+        href="/webinars"
+        :class="{
+          '!border-hoverPrimary border-b-2': currentPath === '/webinars',
+        }"
+        class="text-secondary hover:text-hoverPrimary border-b-2 border-transparent px-4"
+      >
+        Webinars
       </a>
     </nav>
 
@@ -102,7 +111,7 @@
           Home
         </a>
         <a
-          href="/#achieveYourVision"
+          href="/irpack-drum-sample"
           class="text-secondary hover:text-hoverPrimary px-4"
           :class="{
             hidden: !page.props.auth || !page.props.auth.hasAccess,
@@ -118,6 +127,15 @@
           }"
         >
           Masterclass
+        </a>
+        <a
+          href="/webinars"
+          class="text-secondary hover:text-hoverPrimary border-transparent px-4"
+          :class="{
+            hidden: !page.props.auth || !page.props.auth.hasAccess,
+          }"
+        >
+          Webinars
         </a>
         <PrimaryButton
           v-if="!page.props.auth"
@@ -163,7 +181,7 @@ const currentPath = computed(() => {
 });
 
 onMounted(() => {
-  console.log(page.props.auth);
+  //console.log(page.props.auth);
 });
 
 function navigateAndScroll() {

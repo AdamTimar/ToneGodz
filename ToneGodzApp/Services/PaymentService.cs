@@ -30,11 +30,11 @@ namespace ToneGodzApp.Services
                 Expand = new List<string> { "line_items" }
             });
 
-            var user = await _userManager.FindByEmailAsync(email);
+            //var user = await _userManager.FindByEmailAsync(email);
 
             var payment = await _paymentIntentService.GetAsync(session.PaymentIntentId);
 
-            await _context.Payments.AddAsync(new PaymentEntity { Amount = sessionDetails.AmountTotal.Value / 100, Currency = sessionDetails.Currency, PaymentIntentId = sessionDetails.PaymentIntentId, SessionId = session.Id, UserId = user.Id, Date = payment.Created });
+            await _context.Payments.AddAsync(new PaymentEntity { Amount = sessionDetails.AmountTotal.Value / 100, Currency = sessionDetails.Currency, PaymentIntentId = sessionDetails.PaymentIntentId, SessionId = session.Id, Email = email, Date = payment.Created });
 
             try
             {

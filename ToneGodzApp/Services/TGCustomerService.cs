@@ -53,6 +53,7 @@ namespace ToneGodzApp.Services
                 new CustomerEntity { Email = "elekesizsak@gmail.com" },
                 new CustomerEntity { Email = "timaradam19@gmail.com" },
                 new CustomerEntity { Email = "kor@milliomosegyetem.com" },
+                new CustomerEntity { Email = "unai@cowboymedia.agency" }
             };
 
             foreach (var customer in customersToAdd)
@@ -69,31 +70,31 @@ namespace ToneGodzApp.Services
                 _logger.LogError(ex.Message);
             }
 
-            foreach (var c in _context.Customers)
-            {
-                if (c.Email != "flemming@sweetsilencestudios.com" && c.Email != "baracx@gmail.com"
-                   && c.Email != "antonioguitars@gmail.com" && c.Email != "carl@10fold.dk"
-                   && c.Email != "nicolasboriew@gmail.com" && c.Email != "tamastar2099@hotmail.com"
-                   && c.Email != "leon.lundqvist06@gmail.com" && c.Email != "joebarresi@mac.com"
-                   && c.Email != "elekesizsak@gmail.com" && c.Email != "timaradam19@gmail.com"
-                   && c.Email != "kor@milliomosegyetem.com")
-                {
-                    var customer = stripeCustomers.FirstOrDefault(cStripe => cStripe.Email == c.Email);
-                    if (customer == null)
-                    {
-                        _context.Entry(c).State = EntityState.Deleted;
-                    }
-                }
-            }
+            // foreach (var c in _context.Customers)
+            // {
+            //     if (c.Email != "flemming@sweetsilencestudios.com" && c.Email != "baracx@gmail.com"
+            //        && c.Email != "antonioguitars@gmail.com" && c.Email != "carl@10fold.dk"
+            //        && c.Email != "nicolasboriew@gmail.com" && c.Email != "tamastar2099@hotmail.com"
+            //        && c.Email != "leon.lundqvist06@gmail.com" && c.Email != "joebarresi@mac.com"
+            //        && c.Email != "elekesizsak@gmail.com" && c.Email != "timaradam19@gmail.com"
+            //        && c.Email != "kor@milliomosegyetem.com" && c.Email != "unai@cowboymedia.agency")
+            //     {
+            //         var customer = stripeCustomers.FirstOrDefault(cStripe => cStripe.Email == c.Email);
+            //         if (customer == null)
+            //         {
+            //             _context.Entry(c).State = EntityState.Deleted;
+            //         }
+            //     }
+            // }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
+            // try
+            // {
+            //     await _context.SaveChangesAsync();
+            // }
+            // catch (Exception ex)
+            // {
+            //     _logger.LogError(ex.Message);
+            // }
         }
 
         private async Task AddCustomerIfNotExistsAsync(CustomerEntity customer)

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ToneGodzApp.Data;
 
@@ -11,9 +12,11 @@ using ToneGodzApp.Data;
 namespace ToneGodz.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250725155118_UserIdRemovedFromPayment")]
+    partial class UserIdRemovedFromPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -204,7 +207,12 @@ namespace ToneGodz.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("UserEntityId")
+                        .HasColumnType("varchar(255)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UserEntityId");
 
                     b.ToTable("Payments");
                 });
@@ -322,6 +330,18 @@ namespace ToneGodz.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ToneGodzApp.Data.Models.PaymentEntity", b =>
+                {
+                    b.HasOne("ToneGodzApp.Data.Models.UserEntity", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("UserEntityId");
+                });
+
+            modelBuilder.Entity("ToneGodzApp.Data.Models.UserEntity", b =>
+                {
+                    b.Navigation("Payments");
                 });
 #pragma warning restore 612, 618
         }

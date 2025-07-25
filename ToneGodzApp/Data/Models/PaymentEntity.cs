@@ -10,11 +10,8 @@ namespace ToneGodzApp.Data.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
-        [ForeignKey(nameof(UserEntity))]
         [Required]
-        public string UserId { get; set; }
-
-        public UserEntity User { get; set; }
+        public string Email { get; set; }
 
         [Required]
         public string PaymentIntentId { get; set; }
