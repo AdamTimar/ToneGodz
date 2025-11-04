@@ -16,6 +16,13 @@
         src="https://www.youtube.com/embed/NTN5rE77V1w"
       ></iframe>
     </div>
+    <div class="item w-[50%]">
+      <iframe
+        class="w-full"
+        height="500"
+        src="https://www.youtube.com/embed/n46AXCHVWew"
+      ></iframe>
+    </div>
   </div>
 </template>
 <style scoped>
