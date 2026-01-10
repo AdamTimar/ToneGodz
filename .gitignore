@@ -65,7 +65,6 @@ node_modules/
 # .NET Core build outputs
 bin/
 obj/
-wwwroot/
 
 # NPM package-lock files
 package-lock.json

@@ -1,0 +1,251 @@
+{
+  "src/Pages/Account/AccessDenied.vue": {
+    "file": "assets/AccessDenied-D-oj2GID.js",
+    "name": "AccessDenied",
+    "src": "src/Pages/Account/AccessDenied.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/AccessDenied-CXwPF9p8.css"
+    ]
+  },
+  "src/Pages/Account/CheckInboxPasswordReset.vue": {
+    "file": "assets/CheckInboxPasswordReset-Y4CxM5sF.js",
+    "name": "CheckInboxPasswordReset",
+    "src": "src/Pages/Account/CheckInboxPasswordReset.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/ConfirmEmail.vue": {
+    "file": "assets/ConfirmEmail-CfhwmN96.js",
+    "name": "ConfirmEmail",
+    "src": "src/Pages/Account/ConfirmEmail.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/ConfirmEmail-DrAHrRVW.css"
+    ]
+  },
+  "src/Pages/Account/Confirmation.vue": {
+    "file": "assets/Confirmation-DfjU5v2_.js",
+    "name": "Confirmation",
+    "src": "src/Pages/Account/Confirmation.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/ForgotPassword.vue": {
+    "file": "assets/ForgotPassword-CYyunU2j.js",
+    "name": "ForgotPassword",
+    "src": "src/Pages/Account/ForgotPassword.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/Login.vue": {
+    "file": "assets/Login-C1QHhwQ3.js",
+    "name": "Login",
+    "src": "src/Pages/Account/Login.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/PasswordReset.vue": {
+    "file": "assets/PasswordReset-BAPD9PZs.js",
+    "name": "PasswordReset",
+    "src": "src/Pages/Account/PasswordReset.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/PasswordResetConfirmation.vue": {
+    "file": "assets/PasswordResetConfirmation-BG6BWkzX.js",
+    "name": "PasswordResetConfirmation",
+    "src": "src/Pages/Account/PasswordResetConfirmation.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/Register.vue": {
+    "file": "assets/Register-O2-QY_pQ.js",
+    "name": "Register",
+    "src": "src/Pages/Account/Register.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Account/ResendConfirmationEmail.vue": {
+    "file": "assets/ResendConfirmationEmail-DYffPemK.js",
+    "name": "ResendConfirmationEmail",
+    "src": "src/Pages/Account/ResendConfirmationEmail.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Admin/Index.vue": {
+    "file": "assets/Index-D9aNnptm.js",
+    "name": "Index",
+    "src": "src/Pages/Admin/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Index-CvbDj1K6.css"
+    ]
+  },
+  "src/Pages/Home/Index.vue": {
+    "file": "assets/Index-Cyj_R1CH.js",
+    "name": "Index",
+    "src": "src/Pages/Home/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Index-CihXx2TL.css"
+    ]
+  },
+  "src/Pages/IRPackDrumSample/Index.vue": {
+    "file": "assets/Index-BbAlViTm.js",
+    "name": "Index",
+    "src": "src/Pages/IRPackDrumSample/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Index-Cz3t3LTC.css"
+    ]
+  },
+  "src/Pages/Masterclass/Index.vue": {
+    "file": "assets/Index-XAHzd9V8.js",
+    "name": "Index",
+    "src": "src/Pages/Masterclass/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Masterclass/Subfolders.vue": {
+    "file": "assets/Subfolders-Bt3TgHRW.js",
+    "name": "Subfolders",
+    "src": "src/Pages/Masterclass/Subfolders.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Masterclass/Videos.vue": {
+    "file": "assets/Videos-CnhoEfKD.js",
+    "name": "Videos",
+    "src": "src/Pages/Masterclass/Videos.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Videos-DhT--mp_.css"
+    ]
+  },
+  "src/Pages/Purchase/AlreadyPurchased.vue": {
+    "file": "assets/AlreadyPurchased-DKiAm50_.js",
+    "name": "AlreadyPurchased",
+    "src": "src/Pages/Purchase/AlreadyPurchased.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Purchase/Success.vue": {
+    "file": "assets/Success-IxtVwYMf.js",
+    "name": "Success",
+    "src": "src/Pages/Purchase/Success.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ]
+  },
+  "src/Pages/Webinars/Index.vue": {
+    "file": "assets/Index-DBNFvW0_.js",
+    "name": "Index",
+    "src": "src/Pages/Webinars/Index.vue",
+    "isDynamicEntry": true,
+    "imports": [
+      "src/main.js"
+    ],
+    "css": [
+      "assets/Index-PkTkfN9z.css"
+    ]
+  },
+  "src/assets/fonts/Russo_One/RussoOne-Regular.ttf": {
+    "file": "assets/RussoOne-Regular-C3BxZIj7.ttf",
+    "src": "src/assets/fonts/Russo_One/RussoOne-Regular.ttf"
+  },
+  "src/assets/fonts/Ubuntu/Ubuntu-Bold.ttf": {
+    "file": "assets/Ubuntu-Bold-BGoo8i9Y.ttf",
+    "src": "src/assets/fonts/Ubuntu/Ubuntu-Bold.ttf"
+  },
+  "src/assets/fonts/Ubuntu/Ubuntu-Italic.ttf": {
+    "file": "assets/Ubuntu-Italic-BxSEJX07.ttf",
+    "src": "src/assets/fonts/Ubuntu/Ubuntu-Italic.ttf"
+  },
+  "src/assets/fonts/Ubuntu/Ubuntu-Light.ttf": {
+    "file": "assets/Ubuntu-Light-DlXMI-yU.ttf",
+    "src": "src/assets/fonts/Ubuntu/Ubuntu-Light.ttf"
+  },
+  "src/assets/fonts/Ubuntu/Ubuntu-Regular.ttf": {
+    "file": "assets/Ubuntu-Regular-D14tH6yt.ttf",
+    "src": "src/assets/fonts/Ubuntu/Ubuntu-Regular.ttf"
+  },
+  "src/main.js": {
+    "file": "assets/main-B9tPCzeY.js",
+    "name": "main",
+    "src": "src/main.js",
+    "isEntry": true,
+    "dynamicImports": [
+      "src/Pages/Account/AccessDenied.vue",
+      "src/Pages/Account/CheckInboxPasswordReset.vue",
+      "src/Pages/Account/ConfirmEmail.vue",
+      "src/Pages/Account/Confirmation.vue",
+      "src/Pages/Account/ForgotPassword.vue",
+      "src/Pages/Account/Login.vue",
+      "src/Pages/Account/PasswordReset.vue",
+      "src/Pages/Account/PasswordResetConfirmation.vue",
+      "src/Pages/Account/Register.vue",
+      "src/Pages/Account/ResendConfirmationEmail.vue",
+      "src/Pages/Admin/Index.vue",
+      "src/Pages/Home/Index.vue",
+      "src/Pages/IRPackDrumSample/Index.vue",
+      "src/Pages/Masterclass/Index.vue",
+      "src/Pages/Masterclass/Subfolders.vue",
+      "src/Pages/Masterclass/Videos.vue",
+      "src/Pages/Purchase/AlreadyPurchased.vue",
+      "src/Pages/Purchase/Success.vue",
+      "src/Pages/Webinars/Index.vue"
+    ],
+    "css": [
+      "assets/main-BgWQheV4.css"
+    ],
+    "assets": [
+      "assets/RussoOne-Regular-C3BxZIj7.ttf",
+      "assets/Ubuntu-Regular-D14tH6yt.ttf",
+      "assets/Ubuntu-Italic-BxSEJX07.ttf",
+      "assets/Ubuntu-Light-DlXMI-yU.ttf",
+      "assets/Ubuntu-Bold-BGoo8i9Y.ttf"
+    ]
+  }
+}

@@ -1,0 +1,1 @@
+import{_ as e,o as c,c as t}from"./main-B9tPCzeY.js";const r={},o={class:"text-center"};function s(a,n){return c(),t("div",o,"You already have this product")}const d=e(r,[["render",s]]);export{d as default};

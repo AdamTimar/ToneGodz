@@ -89,7 +89,8 @@ public class PurchaseController : Controller
                 PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
                     CaptureMethod = "automatic"
-                }
+                },
+                AllowPromotionCodes = true
             };
 
             if (User.Identity.IsAuthenticated)
