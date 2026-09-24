@@ -12,5 +12,9 @@ namespace ToneGodzApp.Data.Models
 
         [Required]
         public string Email { get; set; }
+
+        [ForeignKey(nameof(ProductEntity))]
+        public int? ProductId { get; set; }
+        public ProductEntity? Product { get; set; }
     }
 }

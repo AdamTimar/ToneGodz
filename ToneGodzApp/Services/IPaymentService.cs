@@ -4,6 +4,6 @@ namespace ToneGodzApp.Services
 {
     public interface IPaymentService
     {
-        public Task AddPayment(Session session, string email);
+        public Task AddPayment(Session session, string email, int productId);
     }
 }

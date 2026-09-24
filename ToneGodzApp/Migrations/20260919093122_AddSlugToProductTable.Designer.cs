@@ -12,8 +12,8 @@ using ToneGodzApp.Data;
 namespace ToneGodz.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241227092111_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260919093122_AddSlugToProductTable")]
+    partial class AddSlugToProductTable
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -170,10 +170,15 @@ namespace ToneGodz.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
+                    b.Property<int?>("ProductId")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("ProductId");
 
                     b.ToTable("Customers");
                 });
@@ -196,19 +201,46 @@ namespace ToneGodz.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("PaymentIntentId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("SessionId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
-
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("ToneGodzApp.Data.Models.ProductEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StripePriceId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Products");
                 });
 
             modelBuilder.Entity("ToneGodzApp.Data.Models.UserEntity", b =>
@@ -222,6 +254,9 @@ namespace ToneGodz.Migrations
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -324,20 +359,18 @@ namespace ToneGodz.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("ToneGodzApp.Data.Models.PaymentEntity", b =>
+            modelBuilder.Entity("ToneGodzApp.Data.Models.CustomerEntity", b =>
                 {
-                    b.HasOne("ToneGodzApp.Data.Models.UserEntity", "User")
-                        .WithMany("Payments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasOne("ToneGodzApp.Data.Models.ProductEntity", "Product")
+                        .WithMany("Customers")
+                        .HasForeignKey("ProductId");
 
-                    b.Navigation("User");
+                    b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("ToneGodzApp.Data.Models.UserEntity", b =>
+            modelBuilder.Entity("ToneGodzApp.Data.Models.ProductEntity", b =>
                 {
-                    b.Navigation("Payments");
+                    b.Navigation("Customers");
                 });
 #pragma warning restore 612, 618
         }

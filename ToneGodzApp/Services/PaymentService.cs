@@ -23,7 +23,7 @@ namespace ToneGodzApp.Services
             _userManager = userManager;
             _logger = logger;
         }
-        public async Task AddPayment(Session session, string email)
+        public async Task AddPayment(Session session, string email, int productId)
         {
             var sessionDetails = _sessionService.Get(session.Id, new SessionGetOptions
             {
@@ -34,7 +34,7 @@ namespace ToneGodzApp.Services
 
             var payment = await _paymentIntentService.GetAsync(session.PaymentIntentId);
 
-            await _context.Payments.AddAsync(new PaymentEntity { Amount = sessionDetails.AmountTotal.Value / 100, Currency = sessionDetails.Currency, PaymentIntentId = sessionDetails.PaymentIntentId, SessionId = session.Id, Email = email, Date = payment.Created });
+            await _context.Payments.AddAsync(new PaymentEntity { Amount = sessionDetails.AmountTotal.Value / 100, Currency = sessionDetails.Currency, PaymentIntentId = sessionDetails.PaymentIntentId, SessionId = session.Id, Email = email, Date = payment.Created, ProductId = productId });
 
             try
             {

@@ -9,6 +9,7 @@ namespace ToneGodzApp.Data
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<PaymentEntity> Payments { get; set; }
         public DbSet<CustomerEntity> Customers { get; set; }
+        public DbSet<ProductEntity> Products { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
@@ -22,15 +23,17 @@ namespace ToneGodzApp.Data
                 .Ignore(u => u.PhoneNumber);
             builder.Entity<UserEntity>()
                 .Ignore(u => u.PhoneNumberConfirmed);
-            builder.Entity<CustomerEntity>().HasIndex(c => c.Email).IsUnique();
+            builder.Entity<CustomerEntity>().HasIndex(c => new { c.Email, c.ProductId }).IsUnique();
+
+            builder.Entity<ProductEntity>()
+            .Property(p => p.Name)
+            .HasConversion<string>();
 
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-
-
         }
     }
 }

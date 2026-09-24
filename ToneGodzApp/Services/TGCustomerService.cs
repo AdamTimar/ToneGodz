@@ -18,57 +18,29 @@ namespace ToneGodzApp.Services
             _stripeService = stripeService;
         }
 
-        public async Task<CustomerEntity> GetCustomerByEmail(string email)
+        public async Task<CustomerEntity> GetCustomerByEmailAndProductId(string email, int productId)
         {
-            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email);
+            return await _context.Customers.FirstOrDefaultAsync(c => c.Email == email && c.ProductId == productId);
         }
 
         public async Task GetCustomersFromStripe()
         {
-            var stripeCustomers = await _stripeService.GetCustomers();
-            foreach (var stripeCustomer in stripeCustomers)
+            var stripeCustomersAndPrices = await _stripeService.GetCustomers();
+            foreach (var stripeCustomerAndPrice in stripeCustomersAndPrices)
             {
-                await AddCustomerIfNotExistsAsync(new CustomerEntity { Email = stripeCustomer.Email });
+                var product = await _context.Products.FirstOrDefaultAsync(p => p.StripePriceId == stripeCustomerAndPrice.Item2);
+                if (product == null)
+                {
+                    _logger.LogWarning($"Product with Stripe Price ID {stripeCustomerAndPrice.Item2} not found in the database. Skipping customer {stripeCustomerAndPrice.Item1.Email}.");
+                    continue;
+                }
+                _logger.LogInformation($"Adding customer with email {stripeCustomerAndPrice.Item1.Email} for product {product.Id}");
+
+                await AddCustomerIfNotExistsAsync(new CustomerEntity { Email = stripeCustomerAndPrice.Item1.Email, ProductId = product.Id });
+
             }
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
 
-            var customersToAdd = new[]
-            {
-                new CustomerEntity { Email = "flemming@sweetsilencestudios.com"  },
-                new CustomerEntity { Email = "baracx@gmail.com" },
-                new CustomerEntity { Email = "antonioguitars@gmail.com" },
-                new CustomerEntity { Email = "carl@10fold.dk"},
-                new CustomerEntity { Email = "nicolasboriew@gmail.com" },
-                new CustomerEntity { Email = "tamastar2099@hotmail.com" },
-                new CustomerEntity { Email = "leon.lundqvist06@gmail.com"  },
-                new CustomerEntity { Email = "joebarresi@mac.com"},
-                new CustomerEntity { Email = "elekesizsak@gmail.com" },
-                new CustomerEntity { Email = "timaradam19@gmail.com" },
-                new CustomerEntity { Email = "kor@milliomosegyetem.com" },
-                new CustomerEntity { Email = "unai@cowboymedia.agency" }
-            };
-
-            foreach (var customer in customersToAdd)
-            {
-                await AddCustomerIfNotExistsAsync(customer);
-            }
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-            }
 
             // foreach (var c in _context.Customers)
             // {
@@ -101,11 +73,20 @@ namespace ToneGodzApp.Services
         {
             var exists = await _context.Customers
                 .AsNoTracking()
-                .AnyAsync(c => c.Email == customer.Email);
+                .AnyAsync(c => c.Email == customer.Email && c.ProductId == customer.ProductId);
 
             if (!exists)
             {
                 await _context.Customers.AddAsync(customer);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex.Message);
+                }
             }
             else
             {

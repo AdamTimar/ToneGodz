@@ -27,5 +27,9 @@ namespace ToneGodzApp.Data.Models
 
         [Required]
         public string SessionId { get; set; }
+
+        [ForeignKey(nameof(ProductEntity))]
+        public int ProductId { get; set; }
+        public ProductEntity Product { get; set; }
     }
 }

@@ -25,20 +25,20 @@
 </template>
 
 <script setup>
-import PrimaryButton from "@/components/PrimaryButton.vue";
-import { usePage } from "@inertiajs/vue3";
-import TheSilentHero from "./TheSilentHero.vue";
+import PrimaryButton from '@/components/PrimaryButton.vue';
+import { usePage } from '@inertiajs/vue3';
+import TheSilentHero from './TheSilentHero.vue';
 const page = usePage();
 
 const redirectToPurchase = () => {
-  window.location.href = "/purchase";
+  window.location.href = 'flemming-rasmussen/purchase';
 };
 </script>
 
 <style scoped>
 @media screen and (max-width: 1080px) {
   .background-image {
-    background-image: url("bg.jpg");
+    background-image: url('bg.jpg');
     background-repeat: no-repeat;
     /* background-size: 1000px !important; */
     max-width: 100%;

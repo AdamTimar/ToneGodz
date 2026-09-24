@@ -5,7 +5,8 @@ module.exports = {
     extend: {
       colors: {
         background: '#242424',
-        primary: '#F05B2A',
+        // primary: '#ff4f17',
+        primary: '#F15A29', //Izsak adta meg
         hoverPrimary: '#C64A21',
         secondary: '#FFFFFF',
         error: '#FA0707',

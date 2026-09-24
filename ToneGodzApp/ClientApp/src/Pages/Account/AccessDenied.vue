@@ -6,7 +6,7 @@
       <p>You didn't purchase our masterclass yet.</p>
       <span>
         Click
-        <a href="/purchase">here</a>
+        <a href="flemming-rasmussen/purchase">here</a>
         to get access!
       </span>
     </div>

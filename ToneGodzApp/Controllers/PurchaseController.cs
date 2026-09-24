@@ -17,7 +17,7 @@ using ToneGodzApp.Services;
 
 namespace ToneGodzApp.Controllers;
 
-[Route("[controller]")]
+[Route("{slug}/[controller]")]
 public class PurchaseController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -52,52 +52,74 @@ public class PurchaseController : Controller
         _cache = cache;
     }
 
+
+
+    [HttpGet("Success")]
+    public async Task<IActionResult> Success()
+    {
+        return Inertia.Render("Purchase/Success");
+    }
+
     [HttpGet]
-    //[Authorize]
     public async Task<IActionResult> Index()
     {
-        var customer = await _customerService.GetCustomerByEmail(User.Identity.Name);
+        var product = HttpContext.Items["Product"] as ProductEntity;
+
+        var customer = await _customerService.GetCustomerByEmailAndProductId(User.Identity?.Name, product.Id);
+
         if (customer != null)
         {
             return Inertia.Render("Purchase/AlreadyPurchased");
         }
 
-        var price = _configuration["Stripe:Price"];
         try
         {
-            Price priceObj = _priceService.Get(price);
-            // Create a payment link
+            var priceId = product.StripePriceId;
+
+            // Optional: verify that the Stripe price exists
+            var priceService = new PriceService(_stripeService.GetClient());
+            var price = priceService.Get(priceId);
+
             var options = new SessionCreateOptions
             {
-                PaymentMethodTypes = new List<string> { "card" },
-                LineItems = new List<SessionLineItemOptions>
-                    {
-                        new SessionLineItemOptions
-                        {
-                            Price = price,
+                PaymentMethodTypes = new List<string>
+            {
+                "card"
+            },
 
-                            Quantity = 1,
-                        
-                            // Replace with your price I
-                        },
-                    },
+                LineItems = new List<SessionLineItemOptions>
+            {
+                new SessionLineItemOptions
+                {
+                    Price = priceId,
+                    Quantity = 1,
+                }
+            },
+
                 Mode = "payment",
-                SuccessUrl = _configuration["AppUrl"] + "/Purchase/ProcessPayment?session_id={CHECKOUT_SESSION_ID}",
+
+                SuccessUrl =
+                    _configuration["AppUrl"] + "/" + product.Slug +
+                    "/Purchase/ProcessPayment?session_id={CHECKOUT_SESSION_ID}",
+
                 CancelUrl = _configuration["AppUrl"],
-                //Customer = newCustomer.Id,
+
                 BillingAddressCollection = "required",
+
                 PaymentIntentData = new SessionPaymentIntentDataOptions
                 {
                     CaptureMethod = "automatic"
                 },
+
                 AllowPromotionCodes = true
             };
 
-            if (User.Identity.IsAuthenticated)
-            {
-                var newCustomer = await _stripeService.CreateCustomerAsync(User.Identity.Name);
-                options.Customer = newCustomer.Id;
-            }
+
+            var newCustomer =
+                await _stripeService.CreateCustomerAsync(User.Identity.Name);
+
+            options.Customer = newCustomer.Id;
+
 
             var service = new SessionService(_stripeService.GetClient());
             var session = service.Create(options);
@@ -110,19 +132,15 @@ public class PurchaseController : Controller
         }
     }
 
-    [HttpGet]
-    [Route("Success")]
-    public async Task<IActionResult> Success()
-    {
-        return Inertia.Render("Purchase/Success");
-    }
-
 
     [HttpGet]
     [Route("ProcessPayment")]
     public async Task<IActionResult> Purchase(string session_id)
     {
-        var session = await _sessionService.GetAsync(session_id);
+        var session = await _sessionService.GetAsync(session_id, new SessionGetOptions
+        {
+            Expand = new List<string> { "line_items" },
+        });
 
         if (session == null)
         {
@@ -147,9 +165,13 @@ public class PurchaseController : Controller
             });
         }
 
-        await _context.AddAsync(new CustomerEntity { Email = customer.Email });
 
-        _backgroundJobClient.Enqueue(() => _paymentService.AddPayment(session, customer.Email));
+        var priceId = session.LineItems.Data.FirstOrDefault()?.Price?.Id;
+        var product = await _context.Products.FirstOrDefaultAsync(p => p.StripePriceId == priceId);
+
+        await _context.AddAsync(new CustomerEntity { Email = customer.Email, ProductId = product.Id });
+
+        _backgroundJobClient.Enqueue(() => _paymentService.AddPayment(session, customer.Email, product.Id));
 
         try
         {
@@ -165,18 +187,35 @@ public class PurchaseController : Controller
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == User.Identity.Name);
             if (user != null)
             {
+                var hasAccess = false;
+                var hasCliffBurtonSpecialAccess = false;
+
+                switch (product.Slug)
+                {
+                    case "flemming-rasmussen":
+                        hasAccess = true;
+                        break;
+                }
+                switch (product.Slug)
+                {
+                    case "cliff-burton-special":
+                        hasCliffBurtonSpecialAccess = true;
+                        break;
+                }
+
                 var userData = new
                 {
                     Id = user.Id,
                     Email = user.Email,
-                    HasAccess = true
+                    HasAccess = hasAccess,
+                    HasCliffBurtonSpecialAccess = hasCliffBurtonSpecialAccess
                 };
 
                 HttpContext.Session.SetString("UserData", System.Text.Json.JsonSerializer.Serialize(userData, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }));
                 _cache.Set("UserData", userData, TimeSpan.FromHours(1));
             }
         }
-        return RedirectToAction("Success");
+        return RedirectToAction("Success", new { slug = product.Slug });
     }
 }
 

@@ -34,7 +34,7 @@ const scrollToSection = (sectionId) => {
 };
 
 const redirectToPurchase = () => {
-  window.location.href = '/purchase';
+  window.location.href = 'flemming-rasmussen/purchase';
 };
 </script>
 

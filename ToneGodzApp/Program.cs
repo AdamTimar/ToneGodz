@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using ToneGodzApp.Data;
 using ToneGodzApp.Data.Models;
 using ToneGodzApp.Filters;
+using ToneGodzApp.Middlewares;
 using ToneGodzApp.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -38,10 +39,12 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 {
     if (environment == "Development")
     {
-        options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+        //options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"), new MySqlServerVersion(ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     }
     else if (environment == "Production")
     {
+        //options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
         options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
     }
     else
@@ -55,8 +58,8 @@ builder.Services.AddHangfire(config =>
     if (environment == "Development")
     {
         config.UseStorage(
-            new MySqlStorage(builder.Configuration.GetConnectionString("DefaultConnection"),
-                new MySqlStorageOptions
+            new SqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection"),
+                new SqlServerStorageOptions
                 {
                     JobExpirationCheckInterval = TimeSpan.FromHours(1)
                 })
@@ -90,7 +93,7 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(options =>
     .AddEntityFrameworkStores<AppDbContext>()
     .AddDefaultTokenProviders();
 
-builder.Services.AddSingleton<StripeService>(provider => new StripeService(builder.Configuration["Stripe:SecretKey"]));
+builder.Services.AddSingleton<StripeService>(provider => new StripeService(builder.Configuration["Stripe:SecretKey"], provider.GetRequiredService<ILogger<StripeService>>()));
 builder.Services.AddScoped<IEmailSenderService, EmailSenderService>();
 builder.Services.AddScoped<ICustomerService, TGCustomerService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
@@ -203,6 +206,9 @@ using (var scope = app.Services.CreateScope())
 
     await ContextSeed.SeedRolesAsync(userManager, roleManager);
     await ContextSeed.SeedAdminAsync(userManager, roleManager, builder.Configuration);
+    var dbContext = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    //await ContextSeed.SeedProductsAsync(dbContext);
+
 }
 
 app.UseInertia();
@@ -221,7 +227,7 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
-
+app.UseMiddleware<ProductMiddleware>();
 app.UseAuthorization();
 
 app.Use(async (context, next) =>
@@ -269,6 +275,7 @@ app.Use(async (context, next) =>
     await next();
 });
 
+
 app.UseHangfireDashboard("/hangfire", new DashboardOptions
 {
     // Authorization: Only allow users who are authenticated and authorized (e.g., "Admin" role)
@@ -292,6 +299,8 @@ app.Lifetime.ApplicationStarted.Register(() =>
     TimeZoneInfo.FindSystemTimeZoneById("America/New_York")
     );
 });
+
+app.MapControllers();
 
 app.Run();
 

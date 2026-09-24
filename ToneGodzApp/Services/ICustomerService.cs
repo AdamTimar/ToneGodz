@@ -5,6 +5,6 @@ namespace ToneGodzApp.Services
     public interface ICustomerService
     {
         public Task GetCustomersFromStripe();
-        public Task<CustomerEntity> GetCustomerByEmail(string email);
+        public Task<CustomerEntity> GetCustomerByEmailAndProductId(string email, int productId);
     }
 }

@@ -19,7 +19,7 @@
     "vue-audio-visual": "^3.0.11",
     "vue-router": "^4.4.5",
     "vue3-toastify": "^0.2.8",
-    "wavesurfer.js": "^7.9.4",
+    "wavesurfer.js": "^7.12.12",
     "wavesurfer.js-vue": "^1.0.0"
   },
   "devDependencies": {

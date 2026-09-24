@@ -34,7 +34,7 @@ import { usePage } from '@inertiajs/vue3';
 const page = usePage();
 
 const redirectToPurchase = () => {
-  window.location.href = '/purchase';
+  window.location.href = 'flemming-rasmussen/purchase';
 };
 </script>
 

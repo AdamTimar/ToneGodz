@@ -35,7 +35,7 @@
 import LargeButton from '@/components/LargeButton.vue';
 
 const redirectToPurchase = () => {
-  window.location.href = '/purchase';
+  window.location.href = 'flemming-rasmussen/purchase';
 };
 </script>
 

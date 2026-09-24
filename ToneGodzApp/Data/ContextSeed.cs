@@ -31,5 +31,20 @@ namespace ToneGodzApp.Data
 
             }
         }
+
+        public static async Task SeedProductsAsync(AppDbContext context, IConfiguration configuration)
+        {
+            if (!context.Products.Any())
+            {
+                var products = new List<ProductEntity>
+                {
+                    new ProductEntity { Name = Data.Enums.ProductType.FLEMMING_RASMUSSEN, Slug = "flemming-rasmussen", StripePriceId = configuration["Stripe:FlemmingRasmussenPriceId"] },
+                    new ProductEntity { Name = Data.Enums.ProductType.CLIFFTON_BURTON, Slug = "cliffton-burton-special", StripePriceId = configuration["Stripe:ClifftonBurtonPriceId"] }
+                };
+
+                context.Products.AddRange(products);
+                await context.SaveChangesAsync();
+            }
+        }
     }
 }

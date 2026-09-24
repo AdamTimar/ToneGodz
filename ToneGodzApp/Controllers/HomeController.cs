@@ -14,7 +14,7 @@ public class HomeController : Controller
     {
         _userManager = userManager;
     }
-    [HttpGet("/")]
+    [HttpGet("/flemming-rasmussen")]
     public async Task<IActionResult> Index()
     {
         if (!User.Identity.IsAuthenticated)
@@ -27,5 +27,11 @@ public class HomeController : Controller
             return RedirectToAction("Index", "Admin");
         }
         return Inertia.Render("Home/Index");
+    }
+
+    [HttpGet("/")]
+    public IActionResult Root()
+    {
+        return Redirect("/flemming-rasmussen");
     }
 }

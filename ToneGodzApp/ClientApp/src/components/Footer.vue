@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <div class="text-container p-8 mx-28 text-center border-t-2">
+    <div class="text-container p-16 mx-28 text-center border-t-2">
       <p class="title text-center text-2xl text-primary font-extrabold mx-auto">
         REACH OUT
       </p>
@@ -8,16 +8,14 @@
         <div
           class="contact-items flex flex-row gap-28 mx-auto my-10 justify-center"
         >
-          <div
-            class="flex gap-2 bg-[#383838] max-w-fit mx-auto p-3 rounded-md min-w-fit items-center"
-          >
+          <div class="flex gap-2 mx-auto p-3 rounded-md items-center">
             <img
               src="/clipboard.svg"
               alt="clip"
               class="size-9 cursor-pointer"
               @click="copyURL()"
             />
-            <p class="text-left text-lg text-secondary break-all">
+            <p class="text-left lg:text-lg text-secondary break-all">
               contact@tonegodz.com
             </p>
           </div>

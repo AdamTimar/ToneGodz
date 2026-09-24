@@ -180,7 +180,7 @@ const redirectToPurchase = () => {
       console.error('fbq is not loaded yet.');
     }
   }
-  window.location.href = '/purchase';
+  window.location.href = 'flemming-rasmussen/purchase';
 };
 </script>
 
